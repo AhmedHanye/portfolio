@@ -1,0 +1,6 @@
+description = "Generate an atomic commit message following project standards."
+prompt = """
+@{./.agents/prompts/commit.prompt.md}
+
+{{args}}
+"""

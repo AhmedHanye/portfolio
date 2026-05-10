@@ -1,20 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, setRequestLocale } from 'next-intl/server';
-import { notFound } from 'next/navigation';
-import { routing, Locale } from '@/i18n/routing';
-import { ThemeProvider } from '@/components/ThemeProvider';
-import { GSAPInitializer } from '@/components/GSAPInitializer';
+import { Inter } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, setRequestLocale } from "next-intl/server";
+import { notFound } from "next/navigation";
+import { routing, Locale } from "@/i18n/routing";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { GSAPInitializer } from "@/components/GSAPInitializer";
 import "../globals.css";
+import SplashCursor from "@/components/SplashCursor";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
@@ -51,8 +47,8 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      dir={locale === 'ar' ? 'rtl' : 'ltr'}
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      dir={locale === "ar" ? "rtl" : "ltr"}
+      className={`${inter.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">
@@ -63,6 +59,18 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <GSAPInitializer />
+          <SplashCursor
+            DENSITY_DISSIPATION={3.5}
+            VELOCITY_DISSIPATION={2}
+            PRESSURE={0.1}
+            CURL={3}
+            SPLAT_RADIUS={0.2}
+            SPLAT_FORCE={6000}
+            COLOR_UPDATE_SPEED={10}
+            SHADING
+            RAINBOW_MODE={false}
+            COLOR="#FACC15"
+          />
           <div id="smooth-wrapper">
             <div id="smooth-content">
               <NextIntlClientProvider messages={messages}>

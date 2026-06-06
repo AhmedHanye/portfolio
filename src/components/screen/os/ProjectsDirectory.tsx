@@ -85,7 +85,20 @@ export default function ProjectsDirectory() {
           <ProjectCard
             title={t("projects.interviewFlow.title")}
             description={t("projects.interviewFlow.desc")}
-            technologies={["Next.js", "Django Ninja", "Celery", "PowerSync", "SQLite", "PostgreSQL", "Docker"]}
+            technologies={[
+              "React",
+              "TypeScript",
+              "Vite",
+              "Tailwind CSS",
+              "shadcn-ui",
+              "Supabase",
+              "PostgreSQL",
+              "Auth",
+              "Edge Functions",
+              "Realtime",
+              "Playwright (E2E)",
+              "Vitest (Unit)",
+            ]}
             websiteUrl="https://interview-flow-prototype.vercel.app/"
             githubUrl="https://github.com/AhmedHanye/InterviewFlow-prototype"
           />

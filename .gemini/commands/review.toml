@@ -1,6 +1,0 @@
-description = "Perform an expert code review."
-prompt = """
-@{./.agents/prompts/review.prompt.md}
-
-{{args}}
-"""

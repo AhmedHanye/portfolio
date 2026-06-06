@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -123,4 +122,10 @@
   * {
     @apply border-border outline-ring/50;
   }
+}
+
+/* Fix react95 legend positioning under RTL direction globally */
+[dir="rtl"] legend {
+  left: auto !important;
+  right: 8px !important;
 }

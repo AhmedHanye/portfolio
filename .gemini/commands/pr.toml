@@ -1,6 +1,0 @@
-description = "Generate and create a GitHub PR for the current branch."
-prompt = """
-@{./.agents/prompts/pr.prompt.md}
-
-{{args}}
-"""

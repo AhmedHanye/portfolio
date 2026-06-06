@@ -1,17 +1,9 @@
-import Hero from "@/components/hero";
-import { setRequestLocale } from "next-intl/server";
+import WorkspaceSpline from "@/components/WorkspaceSpline";
 
-export default async function Home({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  setRequestLocale(locale);
-
+export default async function Home() {
   return (
-    <main>
-      <Hero />
+    <main id="hero-scroll-container" className="relative h-[200vh]">
+      <WorkspaceSpline />
     </main>
   );
 }

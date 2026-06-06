@@ -4,5 +4,105 @@
     "description": "Welcome to my portfolio website.",
     "deployNow": "Deploy Now",
     "readDocs": "Documentation"
+  },
+  "OS": {
+    "desktop": {
+      "myComputer": "My Computer",
+      "cDrive": "Local Disk (C:)",
+      "aboutMe": "About Me",
+      "mySkills": "My Skills",
+      "myProjects": "My Projects"
+    },
+    "startMenu": {
+      "aboutMe": "About Me",
+      "skills": "Skills",
+      "projects": "Projects",
+      "systemStatus": "System Status",
+      "shutdown": "Shut Down...",
+      "shutdownAlert": "Error 403: System shutdown is disabled. Scroll up to return.",
+      "language": "العربية (Arabic)"
+    },
+    "taskbar": {
+      "start": "Start",
+      "cDrive": "Local Disk (C:)",
+      "explorer": "Windows Explorer",
+      "volume": "Volume"
+    },
+    "systemWindow": {
+      "file": "File",
+      "view": "View",
+      "help": "Help",
+      "helpAlert": "Ahmed_OS v2.6\nCreated by Ahmed Hanye using React95 & Three.js",
+      "scrollWarning": "SCROLL UP TO RETURN TO WORKSPACE"
+    },
+    "diagnostics": {
+      "title": "System Properties & Diagnostics",
+      "deviceSpecs": "Device Specifications:",
+      "os": "⚙️ OS: Ahmed_OS Version 2.6 (AOU)",
+      "cpu": "⚙️ CPU: Intel Core i9-14900K @ 5.8 GHz",
+      "ram": "⚙️ RAM: 64.0 GB DDR5 RAM",
+      "graphics": "⚙️ Graphics: NVIDIA RTX 4090 / SVGA 32-Bit",
+      "direct3d": "⚙️ Direct3D: WebGL 2.0 / R3F Canvas",
+      "logKernel": "Initialising Ahmed_OS kernel...",
+      "logDjango": "Connecting Django Ninja endpoint...",
+      "logPowerSync": "Syncing PowerSync SQLite database...",
+      "logNextReact": "Loading Next.js 16 + React 19 modules...",
+      "logCelery": "Initiating Celery workers & Redis broker...",
+      "logFsd": "FSD structure compiled successfully.",
+      "logReady": "SYSTEM STATE: READY FOR DEPLOYMENT.",
+      "calibration": "Asset Calibration Engine"
+    },
+    "aboutMe": {
+      "title": "Ahmed Hanye Hossny",
+      "role": "Software Engineer",
+      "bio1": "Hey there! I'm Ahmed, a Software Engineer and Computer Science graduate specializing in building high-performance, local-first web applications. I bridge the gap between pixel-perfect frontends and robust backends, working deeply with React 19, Next.js, and Django Ninja.",
+      "bio2": "With hands-on industry experience as a front-end dev and a couple of live SaaS side-projects under my belt, I'm currently looking for Full-Time Frontend or Full-Stack Engineering roles where I can help scale cutting-edge web apps.",
+      "education": "Education: Arab Open University",
+      "major": "Major: Computer Science (Graduated: June 2026)",
+      "location": "Location: Egypt",
+      "github": "GitHub",
+      "linkedin": "LinkedIn",
+      "emailMe": "Email Me"
+    },
+    "skills": {
+      "title": "Technical Skills & Expertise:",
+      "languages": "Languages",
+      "frameworks": "Frameworks & Libraries",
+      "tools": "Developer Tools & Databases",
+      "interests": "Areas of Interest",
+      "interestOffline": "Offline-First & Local-First Architectures: Local SQLite storage + background database synchronization (PowerSync).",
+      "interestFsd": "Feature-Sliced Design (FSD): Modular, clean, and scalable architecture pattern.",
+      "interestHeadless": "Headless & Microservices: Decoupled Next.js static exports paired with Django backend REST/Ninja APIs.",
+      "interestTooling": "Modern Web Tooling & DX: Fast dev pipelines using Bun, uv, Ruff, and Steiger.",
+      "interestTesting": "E2E & Automated Interaction Testing: Storybook play functions, Playwright, and Vitest."
+    },
+    "projects": {
+      "title": "Active Project Folders:",
+      "launchApp": "Launch App",
+      "sourceCode": "Source Code",
+      "interviewFlow": {
+        "title": "InterviewFlow (Graduation Project)",
+        "desc": "A platform for helping both interviewees and interviewers. Allows creation of structured interview pipelines with assessments, coding challenges, and real-time analytics to find the best talent faster. Completed full project implementation."
+      },
+      "awwwards": {
+        "title": "awwwards (Zentry Clone)",
+        "desc": "A high-performance React landing page application built with modern web technologies and best practices, replicating advanced animations and transitions of the Zentry landing page."
+      }
+    },
+    "cDrive": {
+      "title": "Local Disk (C:)",
+      "subtitle": "Select an item to explore its contents:",
+      "projects": "Projects",
+      "windows": "Windows",
+      "recycled": "Recycled",
+      "windowsAlert": "System Folder (C:\\Windows): Access restricted.",
+      "recycledAlert": "Recycle Bin is empty."
+    },
+    "explorer": {
+      "title": "Windows Explorer",
+      "projectsPath": "C:\\Projects:",
+      "readmeAlert": "README.TXT - Notepad\n\nAhmed Hanye Hossny - Software Engineer\nEgypt | ahmedhanyehossny@gmail.com\n-----------------------------------\n\nI am a Computer Science graduate (June 2026) specializing in high-performance, local-first web applications using React 19, Next.js, and Django Ninja.\n\nCheck the tabs in the main window for full details on my bio, technical skills, and projects!",
+      "splineAlert": "Shortcut: WebGL_Workspace_3D - double click folder on desktop or use System Window."
+    }
   }
 }

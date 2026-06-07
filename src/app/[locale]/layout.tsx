@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   title: "Ahmed Hanye | Creative Developer & 3D Web Engineer",
   description:
     "Explore the immersive 3D interactive developer portfolio of Ahmed Hanye. Featuring high-end GSAP animations, React, Next.js, and Three.js workspace experiences.",
+  appleWebApp: {
+    title: "AhmedHanye",
+  },
 };
 
 export function generateStaticParams() {

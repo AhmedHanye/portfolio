@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { type ThreeEvent } from "@react-three/fiber";
 import * as THREE from "three";
 import { gsap, useGSAP } from "@/lib/gsap";
+import { playFx } from "@/lib/sound";
 
 type EmissiveMaterial = THREE.Material & { emissive: THREE.Color };
 
@@ -20,31 +21,124 @@ function isHeadAttachmentObject(obj: THREE.Object3D | null): boolean {
   return false;
 }
 
+function extractEmissiveMaterials(lampGroup: THREE.Group): EmissiveMaterialInfo[] {
+  const mats: EmissiveMaterialInfo[] = [];
+  lampGroup.traverse((child) => {
+    if (child instanceof THREE.Mesh) {
+      const materials = Array.isArray(child.material)
+        ? child.material
+        : [child.material];
+
+      materials.forEach((mat) => {
+        if (mat && "emissive" in mat && mat.emissive instanceof THREE.Color) {
+          if (mat.emissive.r > 0 || mat.emissive.g > 0 || mat.emissive.b > 0) {
+            mats.push({
+              material: mat as EmissiveMaterial,
+              originalColor: mat.emissive.clone(),
+            });
+          }
+        }
+      });
+    }
+  });
+  return mats;
+}
+
+function animateLampOn(
+  spotLight: THREE.Light,
+  targetIntensity: number,
+  emissiveMats: EmissiveMaterialInfo[],
+): void {
+  spotLight.visible = true;
+
+  const tl = gsap.timeline();
+  tl.to(spotLight, { intensity: targetIntensity * 0.25, duration: 0.05 })
+    .to(spotLight, { intensity: 0, duration: 0.04 })
+    .to(spotLight, { intensity: targetIntensity * 0.85, duration: 0.08 })
+    .to(spotLight, { intensity: targetIntensity * 0.1, duration: 0.06 })
+    .to(spotLight, {
+      intensity: targetIntensity,
+      duration: 0.15,
+      ease: "power2.out",
+    });
+
+  emissiveMats.forEach(({ material, originalColor }) => {
+    const emissive = material.emissive;
+    const tlMat = gsap.timeline();
+    tlMat
+      .to(emissive, {
+        r: originalColor.r * 0.25,
+        g: originalColor.g * 0.25,
+        b: originalColor.b * 0.25,
+        duration: 0.05,
+      })
+      .to(emissive, { r: 0, g: 0, b: 0, duration: 0.04 })
+      .to(emissive, {
+        r: originalColor.r * 0.85,
+        g: originalColor.g * 0.85,
+        b: originalColor.b * 0.85,
+        duration: 0.08,
+      })
+      .to(emissive, {
+        r: originalColor.r * 0.1,
+        g: originalColor.g * 0.1,
+        b: originalColor.b * 0.1,
+        duration: 0.06,
+      })
+      .to(emissive, {
+        r: originalColor.r,
+        g: originalColor.g,
+        b: originalColor.b,
+        duration: 0.15,
+        ease: "power2.out",
+      });
+  });
+}
+
+function animateLampOff(
+  spotLight: THREE.Light,
+  emissiveMats: EmissiveMaterialInfo[],
+): void {
+  gsap.to(spotLight, {
+    intensity: 0,
+    duration: 0.12,
+    ease: "power2.in",
+    onComplete: () => {
+      spotLight.visible = false;
+    },
+  });
+
+  emissiveMats.forEach(({ material }) => {
+    gsap.to(material.emissive, {
+      r: 0,
+      g: 0,
+      b: 0,
+      duration: 0.12,
+      ease: "power2.in",
+    });
+  });
+}
+
 export function useLampInteractivity(scene: THREE.Group | null) {
   const [isOn, setIsOn] = useState(true);
-  const [hovered, setHovered] = useState(false);
+  // useRef instead of useState: hover is only used for cursor style (side-effect),
+  // not for rendering. Avoids re-renders that flicker the BotFace Suspense fallback.
+  const hoveredRef = useRef(false);
 
-  // References to store default properties once loaded
   const defaultIntensityRef = useRef<number>(1.5);
   const emissiveMaterialsRef = useRef<EmissiveMaterialInfo[]>([]);
   const originalSwitchRotRef = useRef<THREE.Euler | null>(null);
 
-  // Cached object references to avoid repeated scene tree traversals
   const spotLightRef = useRef<THREE.Light | null>(null);
   const switchObjRef = useRef<THREE.Object3D | null>(null);
-
-  // Track if we have initialized default values
   const isInitializedRef = useRef(false);
 
-  // Find and initialize references
   useEffect(() => {
     if (!scene || isInitializedRef.current) return;
 
     const lampGroup = scene.getObjectByName("Lamp") as THREE.Group | undefined;
     const spotLight = (scene.getObjectByName("Spot Light") ||
-      (lampGroup
-        ? lampGroup.getObjectByName("Spot Light")
-        : null)) as THREE.Light | null;
+      (lampGroup ? lampGroup.getObjectByName("Spot Light") : null)) as THREE.Light | null;
     spotLightRef.current = spotLight;
 
     if (spotLight) {
@@ -52,76 +146,38 @@ export function useLampInteractivity(scene: THREE.Group | null) {
     }
 
     const switchObj = (scene.getObjectByName("switch1") ||
-      (lampGroup
-        ? lampGroup.getObjectByName("switch1")
-        : null)) as THREE.Object3D | null;
+      (lampGroup ? lampGroup.getObjectByName("switch1") : null)) as THREE.Object3D | null;
     switchObjRef.current = switchObj;
 
     if (switchObj) {
       originalSwitchRotRef.current = switchObj.rotation.clone();
     }
 
-    const mats: EmissiveMaterialInfo[] = [];
     if (lampGroup) {
-      lampGroup.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          const materials = Array.isArray(child.material)
-            ? child.material
-            : [child.material];
-
-          materials.forEach((mat) => {
-            if (
-              mat &&
-              "emissive" in mat &&
-              mat.emissive instanceof THREE.Color
-            ) {
-              // Capture materials that have non-zero emissive color components
-              if (
-                mat.emissive.r > 0 ||
-                mat.emissive.g > 0 ||
-                mat.emissive.b > 0
-              ) {
-                mats.push({
-                  material: mat as EmissiveMaterial,
-                  originalColor: mat.emissive.clone(),
-                });
-              }
-            }
-          });
-        }
-      });
+      emissiveMaterialsRef.current = extractEmissiveMaterials(lampGroup);
     }
-
-    emissiveMaterialsRef.current = mats;
     isInitializedRef.current = true;
   }, [scene]);
 
-  // Perform GSAP flicker animation on ON/OFF transition
   useGSAP(
     () => {
       if (!scene || !isInitializedRef.current) return;
 
       const spotLight = spotLightRef.current;
       const switchObj = switchObjRef.current;
-
       if (!spotLight) return;
 
       const targetIntensity = isOn ? defaultIntensityRef.current : 0;
       const emissiveMats = emissiveMaterialsRef.current;
 
-      // Kill any active tweens on the spotlight, materials, and switch
       gsap.killTweensOf(spotLight);
-      emissiveMats.forEach(({ material }) =>
-        gsap.killTweensOf(material.emissive),
-      );
+      emissiveMats.forEach(({ material }) => gsap.killTweensOf(material.emissive));
       if (switchObj) {
         gsap.killTweensOf(switchObj.rotation);
       }
 
-      // 1. Animate switch rotation slightly to reflect physical interaction
       if (switchObj && originalSwitchRotRef.current) {
         const orig = originalSwitchRotRef.current;
-        // Rotate the switch slightly on its local X axis (typical toggle motion)
         gsap.to(switchObj.rotation, {
           x: isOn ? orig.x : orig.x + 0.35,
           duration: 0.15,
@@ -129,76 +185,10 @@ export function useLampInteractivity(scene: THREE.Group | null) {
         });
       }
 
-      // 2. Animate spotlight and emissive materials
       if (isOn) {
-        // Spotlight state: visible
-        spotLight.visible = true;
-
-        // Premium Turn-on flicker timeline
-        const tl = gsap.timeline();
-        tl.to(spotLight, { intensity: targetIntensity * 0.25, duration: 0.05 })
-          .to(spotLight, { intensity: 0, duration: 0.04 })
-          .to(spotLight, { intensity: targetIntensity * 0.85, duration: 0.08 })
-          .to(spotLight, { intensity: targetIntensity * 0.1, duration: 0.06 })
-          .to(spotLight, {
-            intensity: targetIntensity,
-            duration: 0.15,
-            ease: "power2.out",
-          });
-
-        // Emissive material flickers synced with spotlight
-        emissiveMats.forEach(({ material, originalColor }) => {
-          const emissive = material.emissive;
-          const tlMat = gsap.timeline();
-          tlMat
-            .to(emissive, {
-              r: originalColor.r * 0.25,
-              g: originalColor.g * 0.25,
-              b: originalColor.b * 0.25,
-              duration: 0.05,
-            })
-            .to(emissive, { r: 0, g: 0, b: 0, duration: 0.04 })
-            .to(emissive, {
-              r: originalColor.r * 0.85,
-              g: originalColor.g * 0.85,
-              b: originalColor.b * 0.85,
-              duration: 0.08,
-            })
-            .to(emissive, {
-              r: originalColor.r * 0.1,
-              g: originalColor.g * 0.1,
-              b: originalColor.b * 0.1,
-              duration: 0.06,
-            })
-            .to(emissive, {
-              r: originalColor.r,
-              g: originalColor.g,
-              b: originalColor.b,
-              duration: 0.15,
-              ease: "power2.out",
-            });
-        });
+        animateLampOn(spotLight, targetIntensity, emissiveMats);
       } else {
-        // Turn-off: smooth rapid fade-out
-        gsap.to(spotLight, {
-          intensity: 0,
-          duration: 0.12,
-          ease: "power2.in",
-          onComplete: () => {
-            spotLight.visible = false;
-          },
-        });
-
-        emissiveMats.forEach(({ material }) => {
-          const emissive = material.emissive;
-          gsap.to(emissive, {
-            r: 0,
-            g: 0,
-            b: 0,
-            duration: 0.12,
-            ease: "power2.in",
-          });
-        });
+        animateLampOff(spotLight, emissiveMats);
       }
     },
     { dependencies: [isOn, scene], revertOnUpdate: true },
@@ -207,6 +197,7 @@ export function useLampInteractivity(scene: THREE.Group | null) {
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
     if (isHeadAttachmentObject(e.object)) {
       e.stopPropagation();
+      playFx("lamp");
       setIsOn((prev) => !prev);
     }
   };
@@ -214,21 +205,22 @@ export function useLampInteractivity(scene: THREE.Group | null) {
   const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {
     if (isHeadAttachmentObject(e.object)) {
       e.stopPropagation();
-      setHovered(true);
+      hoveredRef.current = true;
     } else {
-      setHovered(false);
+      hoveredRef.current = false;
     }
   };
 
   const handlePointerOut = () => {
-    setHovered(false);
+    hoveredRef.current = false;
   };
 
   return {
     isOn,
-    hovered,
+    hoveredRef,
     handleClick,
     handlePointerMove,
     handlePointerOut,
   };
 }
+

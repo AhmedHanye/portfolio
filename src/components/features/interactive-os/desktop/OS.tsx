@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { ThemeProvider, createGlobalStyle } from "styled-components";
-import { styleReset } from "react95";
 import original from "react95/dist/themes/original";
 import StyledComponentsRegistry from "@/lib/registry";
 
@@ -13,17 +12,19 @@ import ms_sans_serif_bold from "react95/dist/fonts/ms_sans_serif_bold.woff2";
 
 import { useTranslations, useLocale } from "next-intl";
 import { useWindowManager } from "@/hooks/use-window-manager";
+import { useCompactViewport } from "@/hooks/use-compact-viewport";
+import { playFx } from "@/lib/sound";
 
-// Import OS windows directly — no barrel — for optimal tree-shaking.
-import DesktopIcons from "./os/DesktopIcons";
-import SystemWindow from "./os/SystemWindow";
-import CDriveWindow from "./os/CDriveWindow";
-import ExplorerWindow from "./os/ExplorerWindow";
-import TaskBar from "./os/TaskBar";
+// Import OS components
+import DesktopIcons, { type DesktopIconId } from "./DesktopIcons";
+import SystemProperties from "./SystemProperties";
+import AboutMe from "./AboutMe";
+import ProjectsDirectory from "./ProjectsDirectory";
+import SkillsExplorer from "./SkillsExplorer";
+import CDriveWindow from "./CDriveWindow";
+import TaskBar from "./TaskBar";
 
 const GlobalStyles = createGlobalStyle`
-  ${styleReset}
-  
   @font-face {
     font-family: 'ms_sans_serif';
     src: url('${ms_sans_serif}') format('woff2');
@@ -37,6 +38,10 @@ const GlobalStyles = createGlobalStyle`
     font-style: normal;
   }
   
+  .win95-screen-container {
+    font-family: 'ms_sans_serif', sans-serif;
+  }
+
   /* Apply classic Windows 95 cursors globally within the OS container */
   .win95-screen-container,
   .win95-screen-container * {
@@ -51,7 +56,6 @@ const GlobalStyles = createGlobalStyle`
   .win95-screen-container input[type="reset"],
   .win95-screen-container [role="button"],
   .win95-screen-container .cursor-pointer,
-  /* Specifically target styled-components inside react95 */
   .win95-screen-container button *,
   .win95-screen-container .react95-btn,
   .win95-screen-container .react95-btn *,
@@ -69,15 +73,6 @@ const GlobalStyles = createGlobalStyle`
     cursor: url('/cursors/Text.png'), text !important;
   }
   
-  body {
-    font-family: 'ms_sans_serif', sans-serif;
-  }
-  
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
-  }
-
   /* Fix react95 legend positioning under RTL direction */
   .win95-screen-container[dir="rtl"] legend,
   [dir="rtl"] .win95-screen-container legend {
@@ -86,78 +81,62 @@ const GlobalStyles = createGlobalStyle`
   }
 `;
 
-export default function Os({ onToggleLanguage }: { onToggleLanguage: () => void }) {
+interface OsProps {
+  onToggleLanguage: () => void;
+  onShutdown?: () => void;
+  onExitPortfolio?: () => void;
+}
+
+export default function Os({ onToggleLanguage, onShutdown, onExitPortfolio }: OsProps) {
   const t = useTranslations("OS");
   const locale = useLocale();
   const isRtl = locale === "ar";
+  const { isCompact } = useCompactViewport();
 
-  // Seed with current time to avoid the initial empty-string flash.
-  const [time, setTime] = useState(() =>
-    new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-  );
+  const [time, setTime] = useState("");
   const [startMenuOpen, setStartMenuOpen] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [activeTab, setActiveTab] = useState(0);
+  const [selectedIconId, setSelectedIconId] = useState<DesktopIconId | null>(null);
 
-  // Centralised window open/minimized state
-  const { windows, openWindow, closeWindow, toggleMinimize } = useWindowManager();
+  // Centralised multi-window manager
+  const {
+    windows,
+    activeWindowId,
+    openWindow,
+    closeWindow,
+    toggleMinimize,
+    focusWindow,
+  } = useWindowManager();
 
   // Update clock time
   useEffect(() => {
     const updateClock = () => {
       setTime(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
     };
+    updateClock();
     const interval = setInterval(updateClock, 1000);
     return () => clearInterval(interval);
   }, []);
 
-  // Simple progress animation for "system loading"
-  useEffect(() => {
-    const progressInterval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          return 100;
-        }
-        return prev + 5;
-      });
-    }, 150);
-
-    return () => clearInterval(progressInterval);
-  }, []);
-
-  // Memoised to prevent SystemWindow → SystemProperties from re-rendering on
-  // every tick — the array reference was previously new on every render.
-  const systemLogs = useMemo(() => {
-    const logs = [
-      t("diagnostics.logKernel"),
-      t("diagnostics.logDjango"),
-      t("diagnostics.logPowerSync"),
-    ];
-    if (progress >= 30) logs.push(t("diagnostics.logNextReact"));
-    if (progress >= 60) logs.push(t("diagnostics.logCelery"));
-    if (progress >= 90) logs.push(t("diagnostics.logFsd"));
-    if (progress === 100) logs.push(t("diagnostics.logReady"));
-    return logs;
-  }, [progress, t]);
-
-  const handleStartMenuClick = (item: string) => {
-    setStartMenuOpen(false);
-    if (item === "shutdown") {
-      alert(t("startMenu.shutdownAlert"));
-    } else if (item === "about") {
-      setActiveTab(1);
-      openWindow("system");
-    } else if (item === "skills") {
-      setActiveTab(2);
-      openWindow("system");
-    } else if (item === "portfolio") {
-      setActiveTab(3);
-      openWindow("system");
-    } else if (item === "system") {
-      setActiveTab(0);
-      openWindow("system");
+  const handleExitPortfolio = () => {
+    playFx("close");
+    if (onExitPortfolio) {
+      onExitPortfolio();
+    } else {
+      window.location.href = `/${locale}`;
     }
+  };
+
+  const handleShutdown = () => {
+    if (onShutdown) {
+      onShutdown();
+    } else {
+      alert(t("startMenu.shutdownAlert"));
+    }
+  };
+
+  const handleDesktopClick = () => {
+    setStartMenuOpen(false);
+    setSelectedIconId(null);
   };
 
   return (
@@ -167,6 +146,7 @@ export default function Os({ onToggleLanguage }: { onToggleLanguage: () => void 
         <div
           className="win95-screen-container"
           dir={isRtl ? "rtl" : "ltr"}
+          role="presentation"
           style={{
             backgroundImage: "url('/windows95_bg.webp')",
             backgroundSize: "cover",
@@ -178,44 +158,84 @@ export default function Os({ onToggleLanguage }: { onToggleLanguage: () => void 
             position: "relative",
             overflow: "hidden",
             boxSizing: "border-box",
-            padding: "20px",
+            padding: isCompact ? "4px 4px 34px 4px" : "12px 12px 40px 12px",
             color: "#000",
             fontSize: "14px",
           }}
-          onClick={() => setStartMenuOpen(false)}
+          onClick={handleDesktopClick}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              setStartMenuOpen(false);
+            }
+          }}
         >
-          {/* Main Desktop Space */}
-          <div style={{ flex: 1, position: "relative", zIndex: 1 }}>
+          {/* Main Desktop Workspace Area */}
+          <div
+            style={{
+              flex: 1,
+              position: "relative",
+              zIndex: 1,
+              minHeight: 0,
+              overflow: "hidden",
+            }}
+          >
             {/* Desktop Shortcuts */}
             <DesktopIcons
-              setActiveTab={setActiveTab}
+              selectedId={selectedIconId}
+              onSelect={setSelectedIconId}
               openWindow={openWindow}
+              onExitPortfolio={handleExitPortfolio}
             />
 
-            {/* Main Application Window (ahmed_os.exe) */}
-            <SystemWindow
+            {/* System Properties Dialog (My Computer) */}
+            <SystemProperties
               isOpen={windows.system.isOpen}
               onClose={() => closeWindow("system")}
               isMinimized={windows.system.isMinimized}
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              progress={progress}
-              systemLogs={systemLogs}
+              isActive={activeWindowId === "system"}
+              onFocus={() => focusWindow("system")}
+              zIndex={windows.system.zIndex}
             />
 
-            {/* Simulated CDrive Explorer Window */}
+            {/* About Me (about.txt - Notepad) */}
+            <AboutMe
+              isOpen={windows.about.isOpen}
+              onClose={() => closeWindow("about")}
+              isMinimized={windows.about.isMinimized}
+              isActive={activeWindowId === "about"}
+              onFocus={() => focusWindow("about")}
+              zIndex={windows.about.zIndex}
+            />
+
+            {/* Projects Directory (C:\Projects Explorer) */}
+            <ProjectsDirectory
+              isOpen={windows.projects.isOpen}
+              onClose={() => closeWindow("projects")}
+              isMinimized={windows.projects.isMinimized}
+              isActive={activeWindowId === "projects"}
+              onFocus={() => focusWindow("projects")}
+              zIndex={windows.projects.zIndex}
+            />
+
+            {/* Skills Explorer */}
+            <SkillsExplorer
+              isOpen={windows.skills.isOpen}
+              onClose={() => closeWindow("skills")}
+              isMinimized={windows.skills.isMinimized}
+              isActive={activeWindowId === "skills"}
+              onFocus={() => focusWindow("skills")}
+              zIndex={windows.skills.zIndex}
+            />
+
+            {/* Local Disk (C:) */}
             <CDriveWindow
               isOpen={windows.cDrive.isOpen}
               onClose={() => closeWindow("cDrive")}
               isMinimized={windows.cDrive.isMinimized}
-              onOpenExplorer={() => openWindow("explorer")}
-            />
-
-            {/* Simulated Windows Explorer Window */}
-            <ExplorerWindow
-              isOpen={windows.explorer.isOpen}
-              onClose={() => closeWindow("explorer")}
-              isMinimized={windows.explorer.isMinimized}
+              isActive={activeWindowId === "cDrive"}
+              onFocus={() => focusWindow("cDrive")}
+              zIndex={windows.cDrive.zIndex}
+              onOpenProjects={() => openWindow("projects")}
             />
           </div>
 
@@ -223,9 +243,12 @@ export default function Os({ onToggleLanguage }: { onToggleLanguage: () => void 
           <TaskBar
             startMenuOpen={startMenuOpen}
             setStartMenuOpen={setStartMenuOpen}
-            onStartMenuClick={handleStartMenuClick}
+            onOpenWindow={openWindow}
+            onExitPortfolio={handleExitPortfolio}
+            onShutdown={handleShutdown}
             time={time}
             windows={windows}
+            activeWindowId={activeWindowId}
             toggleMinimize={toggleMinimize}
             onToggleLanguage={onToggleLanguage}
           />

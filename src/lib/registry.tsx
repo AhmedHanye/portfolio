@@ -26,14 +26,6 @@ export default function StyledComponentsRegistry({
     return true;
   };
  
-  if (typeof window !== "undefined") {
-    return (
-      <StyleSheetManager shouldForwardProp={shouldForwardProp}>
-        {children}
-      </StyleSheetManager>
-    );
-  }
- 
   return (
     <StyleSheetManager sheet={jsxStyleSheet.instance} shouldForwardProp={shouldForwardProp}>
       {children}

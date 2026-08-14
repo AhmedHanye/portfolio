@@ -44,24 +44,108 @@ function isCactus(obj: THREE.Object3D | null): boolean {
   return false;
 }
 
+function applyMeshShadow(child: THREE.Object3D): void {
+  if (child instanceof THREE.Mesh) {
+    const isCup = /cup/i.test(child.name);
+    child.castShadow = isCup || isCactus(child);
+    child.receiveShadow = true;
+  }
+}
+
+function isShadowCastingLight(child: THREE.Object3D): child is THREE.Light {
+  return (
+    child instanceof THREE.Light &&
+    !(child instanceof THREE.AmbientLight || child instanceof THREE.HemisphereLight)
+  );
+}
+
+function configureLightShadowProperties(light: THREE.Light): void {
+  light.castShadow = true;
+  if (light.shadow) {
+    light.shadow.mapSize.width = 2048;
+    light.shadow.mapSize.height = 2048;
+    light.shadow.bias = -0.0005;
+  }
+}
+
+function applyLightShadow(child: THREE.Object3D): void {
+  if (isShadowCastingLight(child)) {
+    configureLightShadowProperties(child);
+  }
+}
+
 function applyShadowsAndLighting(scene: THREE.Group): void {
   scene.traverse((child: THREE.Object3D) => {
-    if (child instanceof THREE.Mesh) {
-      const isCup = /cup/i.test(child.name);
-      child.castShadow = isCup || isCactus(child);
-      child.receiveShadow = true;
-    }
-    if (child instanceof THREE.Light) {
-      if (!(child instanceof THREE.AmbientLight || child instanceof THREE.HemisphereLight)) {
-        child.castShadow = true;
-        if (child.shadow) {
-          child.shadow.mapSize.width = 2048;
-          child.shadow.mapSize.height = 2048;
-          child.shadow.bias = -0.0005;
-        }
-      }
-    }
+    applyMeshShadow(child);
+    applyLightShadow(child);
   });
+}
+
+function configureSceneCamera(scene: THREE.Group): void {
+  const personalCamera = scene.getObjectByName("Personal Camera");
+  if (personalCamera) {
+    personalCamera.position.set(320.3, 813.4, 802.6);
+    personalCamera.rotation.set(-0.733, 0.567, 0.451);
+  }
+}
+
+function isScreenObject(obj: THREE.Object3D | null): boolean {
+  let current = obj;
+  while (current) {
+    if (current.name === "Screen") return true;
+    current = current.parent;
+  }
+  return false;
+}
+
+function useSplineScenePointerEvents({
+  scene,
+  activeContent,
+  onEnterOs,
+  gl,
+}: {
+  scene: THREE.Group | null;
+  activeContent: string;
+  onEnterOs?: () => void;
+  gl: THREE.WebGLRenderer;
+}) {
+  const screenHoveredRef = useRef(false);
+  const { handleClick, handlePointerMove, handlePointerOut, hoveredRef } =
+    useLampInteractivity(scene);
+
+  const handleSceneClick = useCallback(
+    (e: ThreeEvent<MouseEvent>) => {
+      handleClick(e);
+      if (activeContent === "bot-face" && isScreenObject(e.object)) {
+        e.stopPropagation();
+        onEnterOs?.();
+      }
+    },
+    [handleClick, activeContent, onEnterOs],
+  );
+
+  const handleScenePointerMove = useCallback(
+    (e: ThreeEvent<PointerEvent>) => {
+      handlePointerMove(e);
+      if (activeContent === "bot-face" && isScreenObject(e.object)) {
+        e.stopPropagation();
+        screenHoveredRef.current = true;
+        gl.domElement.style.cursor = "pointer";
+        return;
+      }
+      screenHoveredRef.current = false;
+      gl.domElement.style.cursor = hoveredRef.current ? "pointer" : "";
+    },
+    [handlePointerMove, activeContent, gl, hoveredRef],
+  );
+
+  const handleScenePointerOut = useCallback(() => {
+    handlePointerOut();
+    screenHoveredRef.current = false;
+    gl.domElement.style.cursor = "";
+  }, [handlePointerOut, gl]);
+
+  return { handleSceneClick, handleScenePointerMove, handleScenePointerOut };
 }
 
 export function useSplineScene(
@@ -85,11 +169,7 @@ export function useSplineScene(
   useEffect(() => {
     if (scene) {
       applyShadowsAndLighting(scene);
-      const personalCamera = scene.getObjectByName("Personal Camera");
-      if (personalCamera) {
-        personalCamera.position.set(320.3, 813.4, 802.6);
-        personalCamera.rotation.set(-0.733, 0.567, 0.451);
-      }
+      configureSceneCamera(scene);
     }
   }, [scene]);
 
@@ -103,13 +183,12 @@ export function useSplineScene(
   const originalMaterialRef = useRef<THREE.Material | THREE.Material[] | null>(null);
 
   useLayoutEffect(() => {
-    if (screenMesh) {
-      if (screenMesh.parent && screenMesh.parent instanceof THREE.Group) {
-        screenRef.current = screenMesh.parent;
-      }
-      if (!originalMaterialRef.current) {
-        originalMaterialRef.current = screenMesh.material;
-      }
+    if (!screenMesh) return;
+    if (screenMesh.parent instanceof THREE.Group) {
+      screenRef.current = screenMesh.parent;
+    }
+    if (!originalMaterialRef.current) {
+      originalMaterialRef.current = screenMesh.material;
     }
   }, [screenMesh]);
 
@@ -143,74 +222,17 @@ export function useSplineScene(
 
   const { gl } = useThree();
   const activeContent = useScreenContent();
-  // useRef instead of useState: only used for cursor style, never for rendering.
-  // Keeping this as state was causing Scene re-renders on hover, which flickered
-  // the BotFace Suspense fallback (BotFaceLoading spinner).
-  const screenHoveredRef = useRef(false);
 
-  const { handleClick, handlePointerMove, handlePointerOut, hoveredRef } =
-    useLampInteractivity(scene);
-
-  // Manage cursor style dynamically — done directly in pointer handlers below
-  // to avoid state-driven re-renders.
-
-  /** Walks up the ancestor chain to check if obj is a descendant of "Screen". */
-  const isScreenObject = (obj: THREE.Object3D | null): boolean => {
-    let current = obj;
-    while (current) {
-      if (current.name === "Screen") return true;
-      current = current.parent;
-    }
-    return false;
-  };
-
-  const handleSceneClick = useCallback(
-    (e: ThreeEvent<MouseEvent>) => {
-      // 1. Handle lamp click
-      handleClick(e);
-
-      // 2. Handle screen click-to-enter OS when showing bot face
-      if (activeContent === "bot-face" && isScreenObject(e.object)) {
-        e.stopPropagation();
-        onEnterOs?.();
-      }
-    },
-    [handleClick, activeContent, onEnterOs],
-  );
-
-  const handleScenePointerMove = useCallback(
-    (e: ThreeEvent<PointerEvent>) => {
-      // 1. Handle lamp hover check (updates hoveredRef.current internally)
-      handlePointerMove(e);
-
-      // 2. Handle screen hover check when showing bot face
-      if (activeContent === "bot-face" && isScreenObject(e.object)) {
-        e.stopPropagation();
-        screenHoveredRef.current = true;
-        gl.domElement.style.cursor = "pointer";
-        return;
-      }
-      screenHoveredRef.current = false;
-      // Lamp may still be hovered — check its ref before clearing cursor
-      gl.domElement.style.cursor = hoveredRef.current ? "pointer" : "";
-    },
-    [handlePointerMove, activeContent, gl, hoveredRef],
-  );
-
-  const handleScenePointerOut = useCallback(() => {
-    handlePointerOut();
-    screenHoveredRef.current = false;
-    gl.domElement.style.cursor = "";
-  }, [handlePointerOut, gl]);
+  const { handleSceneClick, handleScenePointerMove, handleScenePointerOut } =
+    useSplineScenePointerEvents({ scene, activeContent, onEnterOs, gl });
 
   return {
     scene,
-    screenRef,
     screenMesh,
-    handleBotFaceTextureReady,
-    activeContent,
+    screenRef,
     handleSceneClick,
     handleScenePointerMove,
     handleScenePointerOut,
+    handleBotFaceTextureReady,
   };
 }

@@ -21,27 +21,72 @@ function isHeadAttachmentObject(obj: THREE.Object3D | null): boolean {
   return false;
 }
 
+function toMaterialArray(material: THREE.Material | THREE.Material[]): THREE.Material[] {
+  return Array.isArray(material) ? material : [material];
+}
+
+function hasPositiveEmissive(color: THREE.Color): boolean {
+  return color.r + color.g + color.b > 0;
+}
+
+function isEmissiveMaterialWithColor(mat: THREE.Material): mat is EmissiveMaterial {
+  if (!("emissive" in mat)) return false;
+  const em = (mat as Partial<EmissiveMaterial>).emissive;
+  return em instanceof THREE.Color && hasPositiveEmissive(em);
+}
+
 function extractEmissiveMaterials(lampGroup: THREE.Group): EmissiveMaterialInfo[] {
   const mats: EmissiveMaterialInfo[] = [];
   lampGroup.traverse((child) => {
     if (child instanceof THREE.Mesh) {
-      const materials = Array.isArray(child.material)
-        ? child.material
-        : [child.material];
-
-      materials.forEach((mat) => {
-        if (mat && "emissive" in mat && mat.emissive instanceof THREE.Color) {
-          if (mat.emissive.r > 0 || mat.emissive.g > 0 || mat.emissive.b > 0) {
-            mats.push({
-              material: mat as EmissiveMaterial,
-              originalColor: mat.emissive.clone(),
-            });
-          }
+      toMaterialArray(child.material).forEach((mat) => {
+        if (isEmissiveMaterialWithColor(mat)) {
+          mats.push({
+            material: mat,
+            originalColor: mat.emissive.clone(),
+          });
         }
       });
     }
   });
   return mats;
+}
+
+function findSceneChildObject<T extends THREE.Object3D>(
+  scene: THREE.Group,
+  group: THREE.Group | undefined,
+  name: string,
+): T | null {
+  return (scene.getObjectByName(name) || group?.getObjectByName(name) || null) as T | null;
+}
+
+function findLampObjects(scene: THREE.Group) {
+  const lampGroup = scene.getObjectByName("Lamp") as THREE.Group | undefined;
+  const spotLight = findSceneChildObject<THREE.Light>(scene, lampGroup, "Spot Light");
+  const switchObj = findSceneChildObject<THREE.Object3D>(scene, lampGroup, "switch1");
+  const emissiveMats = lampGroup ? extractEmissiveMaterials(lampGroup) : [];
+  return { spotLight, switchObj, emissiveMats };
+}
+
+function initLampState(
+  scene: THREE.Group,
+  spotLightRef: React.MutableRefObject<THREE.Light | null>,
+  switchObjRef: React.MutableRefObject<THREE.Object3D | null>,
+  emissiveMatsRef: React.MutableRefObject<EmissiveMaterialInfo[]>,
+  defaultIntensityRef: React.MutableRefObject<number>,
+  originalSwitchRotRef: React.MutableRefObject<THREE.Euler | null>,
+): void {
+  const { spotLight, switchObj, emissiveMats } = findLampObjects(scene);
+  spotLightRef.current = spotLight;
+  switchObjRef.current = switchObj;
+  emissiveMatsRef.current = emissiveMats;
+
+  if (spotLight) {
+    defaultIntensityRef.current = spotLight.intensity || 1.5;
+  }
+  if (switchObj) {
+    originalSwitchRotRef.current = switchObj.rotation.clone();
+  }
 }
 
 function animateLampOn(
@@ -101,7 +146,7 @@ function animateLampOff(
 ): void {
   gsap.to(spotLight, {
     intensity: 0,
-    duration: 0.12,
+    duration: 0.15,
     ease: "power2.in",
     onComplete: () => {
       spotLight.visible = false;
@@ -113,16 +158,59 @@ function animateLampOff(
       r: 0,
       g: 0,
       b: 0,
-      duration: 0.12,
+      duration: 0.15,
       ease: "power2.in",
     });
   });
 }
 
+function animateSwitch(
+  switchObj: THREE.Object3D | null,
+  originalRot: THREE.Euler | null,
+  isOn: boolean,
+): void {
+  if (!switchObj || !originalRot) return;
+  const targetX = originalRot.x + (isOn ? 0 : 0.6);
+  gsap.to(switchObj.rotation, {
+    x: targetX,
+    duration: 0.15,
+    ease: "power2.out",
+  });
+}
+
+function animateLampTransition(
+  spotLight: THREE.Light,
+  targetIntensity: number,
+  emissiveMats: EmissiveMaterialInfo[],
+  isOn: boolean,
+): void {
+  gsap.killTweensOf(spotLight);
+  emissiveMats.forEach(({ material }) => gsap.killTweensOf(material.emissive));
+
+  if (isOn) {
+    animateLampOn(spotLight, targetIntensity, emissiveMats);
+  } else {
+    animateLampOff(spotLight, emissiveMats);
+  }
+}
+
+function animateLampEffect(
+  spotLight: THREE.Light | null,
+  switchObj: THREE.Object3D | null,
+  originalRot: THREE.Euler | null,
+  emissiveMats: EmissiveMaterialInfo[],
+  defaultIntensity: number,
+  isOn: boolean,
+): void {
+  if (!spotLight) return;
+  animateSwitch(switchObj, originalRot, isOn);
+  const targetIntensity = isOn ? defaultIntensity : 0;
+  animateLampTransition(spotLight, targetIntensity, emissiveMats, isOn);
+}
+
+// fallow-ignore-next-line complexity
 export function useLampInteractivity(scene: THREE.Group | null) {
   const [isOn, setIsOn] = useState(true);
-  // useRef instead of useState: hover is only used for cursor style (side-effect),
-  // not for rendering. Avoids re-renders that flicker the BotFace Suspense fallback.
   const hoveredRef = useRef(false);
 
   const defaultIntensityRef = useRef<number>(1.5);
@@ -135,61 +223,28 @@ export function useLampInteractivity(scene: THREE.Group | null) {
 
   useEffect(() => {
     if (!scene || isInitializedRef.current) return;
-
-    const lampGroup = scene.getObjectByName("Lamp") as THREE.Group | undefined;
-    const spotLight = (scene.getObjectByName("Spot Light") ||
-      (lampGroup ? lampGroup.getObjectByName("Spot Light") : null)) as THREE.Light | null;
-    spotLightRef.current = spotLight;
-
-    if (spotLight) {
-      defaultIntensityRef.current = spotLight.intensity ?? 1.5;
-    }
-
-    const switchObj = (scene.getObjectByName("switch1") ||
-      (lampGroup ? lampGroup.getObjectByName("switch1") : null)) as THREE.Object3D | null;
-    switchObjRef.current = switchObj;
-
-    if (switchObj) {
-      originalSwitchRotRef.current = switchObj.rotation.clone();
-    }
-
-    if (lampGroup) {
-      emissiveMaterialsRef.current = extractEmissiveMaterials(lampGroup);
-    }
+    initLampState(
+      scene,
+      spotLightRef,
+      switchObjRef,
+      emissiveMaterialsRef,
+      defaultIntensityRef,
+      originalSwitchRotRef,
+    );
     isInitializedRef.current = true;
   }, [scene]);
 
   useGSAP(
     () => {
       if (!scene || !isInitializedRef.current) return;
-
-      const spotLight = spotLightRef.current;
-      const switchObj = switchObjRef.current;
-      if (!spotLight) return;
-
-      const targetIntensity = isOn ? defaultIntensityRef.current : 0;
-      const emissiveMats = emissiveMaterialsRef.current;
-
-      gsap.killTweensOf(spotLight);
-      emissiveMats.forEach(({ material }) => gsap.killTweensOf(material.emissive));
-      if (switchObj) {
-        gsap.killTweensOf(switchObj.rotation);
-      }
-
-      if (switchObj && originalSwitchRotRef.current) {
-        const orig = originalSwitchRotRef.current;
-        gsap.to(switchObj.rotation, {
-          x: isOn ? orig.x : orig.x + 0.35,
-          duration: 0.15,
-          ease: "back.out(2)",
-        });
-      }
-
-      if (isOn) {
-        animateLampOn(spotLight, targetIntensity, emissiveMats);
-      } else {
-        animateLampOff(spotLight, emissiveMats);
-      }
+      animateLampEffect(
+        spotLightRef.current,
+        switchObjRef.current,
+        originalSwitchRotRef.current,
+        emissiveMaterialsRef.current,
+        defaultIntensityRef.current,
+        isOn,
+      );
     },
     { dependencies: [isOn, scene], revertOnUpdate: true },
   );

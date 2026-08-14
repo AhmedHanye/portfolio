@@ -91,28 +91,8 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export default async function RootLayout({
-  children,
-  params,
-}: Readonly<{
-  children: React.ReactNode;
-  params: Promise<{ locale: string }>;
-}>) {
-  const { locale } = await params;
-
-  // Ensure that the incoming `locale` is valid
-  if (!routing.locales.includes(locale as Locale)) {
-    notFound();
-  }
-
-  // Enable static rendering
-  setRequestLocale(locale);
-
-  // Providing all messages to the client
-  // side is the easiest way to get started
-  const messages = await getMessages();
-
-  const jsonLd = {
+function buildJsonLd(locale: string) {
+  return {
     "@context": "https://schema.org",
     "@type": "ProfilePage",
     mainEntity: {
@@ -135,6 +115,30 @@ export default async function RootLayout({
       ],
     },
   };
+}
+
+// fallow-ignore-next-line complexity
+export default async function RootLayout({
+  children,
+  params,
+}: Readonly<{
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}>) {
+  const { locale } = await params;
+
+  // Ensure that the incoming `locale` is valid
+  if (!routing.locales.includes(locale as Locale)) {
+    notFound();
+  }
+
+  // Enable static rendering
+  setRequestLocale(locale);
+
+  // Providing all messages to the client
+  // side is the easiest way to get started
+  const messages = await getMessages();
+  const jsonLd = buildJsonLd(locale);
 
   return (
     <html

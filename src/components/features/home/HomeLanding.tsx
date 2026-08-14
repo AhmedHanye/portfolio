@@ -40,33 +40,24 @@ const GlobalStyles = createGlobalStyle`
   
   .win95-landing-page {
     font-family: 'ms_sans_serif', sans-serif;
-  }
-
-  /* Windows 95 Cursors */
-  .win95-landing-page,
-  .win95-landing-page * {
     cursor: url('/cursors/Arrow.png'), auto;
   }
-  
-  .win95-landing-page a,
+
   .win95-landing-page button,
-  .win95-landing-page select,
+  .win95-landing-page a,
   .win95-landing-page [role="button"],
-  .win95-landing-page .cursor-pointer,
-  .win95-landing-page button * {
-    cursor: url('/cursors/HandPointer.png'), pointer !important;
-  }
-  
-  .win95-landing-page input[type="text"],
-  .win95-landing-page textarea {
-    cursor: url('/cursors/Text.png'), text !important;
+  .win95-landing-page .cursor-pointer {
+    cursor: url('/cursors/HandPointer.png'), pointer;
   }
 
-  /* RTL adjustments */
-  .win95-landing-page[dir="rtl"] legend,
+  .win95-landing-page input,
+  .win95-landing-page textarea {
+    cursor: url('/cursors/Text.png'), text;
+  }
+
   [dir="rtl"] .win95-landing-page legend {
-    left: auto !important;
-    right: 8px !important;
+    left: auto;
+    right: 8px;
   }
 `;
 

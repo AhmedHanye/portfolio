@@ -40,7 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.playwright-mcp
+.fallow/
+.doctor/
 
-.agents/mcp_config.json
-.vscode/mcp.json

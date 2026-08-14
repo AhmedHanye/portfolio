@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/immutability */
-import { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from "react";
+import { useEffect, useLayoutEffect, useRef, useMemo, useCallback } from "react";
 import * as THREE from "three";
 import {
   useLoader,
@@ -11,7 +11,6 @@ import SplineLoader from "@splinetool/loader";
 import { useCrtMouseLook } from "@/hooks/use-crt-mouse-look";
 import { useLampInteractivity } from "@/hooks/use-lamp-interactivity";
 import { useScreenContent } from "@/hooks/use-screen-content";
-import { gsap } from "@/lib/gsap";
 
 function findScreenMesh(group: THREE.Group): THREE.Mesh | null {
   let found: THREE.Mesh | null = null;
@@ -36,7 +35,124 @@ function findScreenMesh(group: THREE.Group): THREE.Mesh | null {
   return found;
 }
 
-export function useSplineScene(onReady?: () => void) {
+function isCactus(obj: THREE.Object3D | null): boolean {
+  let current: THREE.Object3D | null = obj;
+  while (current) {
+    if (/small-cactus/i.test(current.name)) return true;
+    current = current.parent;
+  }
+  return false;
+}
+
+function applyMeshShadow(child: THREE.Object3D): void {
+  if (child instanceof THREE.Mesh) {
+    const isCup = /cup/i.test(child.name);
+    child.castShadow = isCup || isCactus(child);
+    child.receiveShadow = true;
+  }
+}
+
+function isShadowCastingLight(child: THREE.Object3D): child is THREE.Light {
+  return (
+    child instanceof THREE.Light &&
+    !(child instanceof THREE.AmbientLight || child instanceof THREE.HemisphereLight)
+  );
+}
+
+function configureLightShadowProperties(light: THREE.Light): void {
+  light.castShadow = true;
+  if (light.shadow) {
+    light.shadow.mapSize.width = 2048;
+    light.shadow.mapSize.height = 2048;
+    light.shadow.bias = -0.0005;
+  }
+}
+
+function applyLightShadow(child: THREE.Object3D): void {
+  if (isShadowCastingLight(child)) {
+    configureLightShadowProperties(child);
+  }
+}
+
+function applyShadowsAndLighting(scene: THREE.Group): void {
+  scene.traverse((child: THREE.Object3D) => {
+    applyMeshShadow(child);
+    applyLightShadow(child);
+  });
+}
+
+function configureSceneCamera(scene: THREE.Group): void {
+  const personalCamera = scene.getObjectByName("Personal Camera");
+  if (personalCamera) {
+    personalCamera.position.set(320.3, 813.4, 802.6);
+    personalCamera.rotation.set(-0.733, 0.567, 0.451);
+  }
+}
+
+function isScreenObject(obj: THREE.Object3D | null): boolean {
+  let current = obj;
+  while (current) {
+    if (current.name === "Screen") return true;
+    current = current.parent;
+  }
+  return false;
+}
+
+function useSplineScenePointerEvents({
+  scene,
+  activeContent,
+  onEnterOs,
+  gl,
+}: {
+  scene: THREE.Group | null;
+  activeContent: string;
+  onEnterOs?: () => void;
+  gl: THREE.WebGLRenderer;
+}) {
+  const screenHoveredRef = useRef(false);
+  const { handleClick, handlePointerMove, handlePointerOut, hoveredRef } =
+    useLampInteractivity(scene);
+
+  const handleSceneClick = useCallback(
+    (e: ThreeEvent<MouseEvent>) => {
+      handleClick(e);
+      if (activeContent === "bot-face" && isScreenObject(e.object)) {
+        e.stopPropagation();
+        onEnterOs?.();
+      }
+    },
+    [handleClick, activeContent, onEnterOs],
+  );
+
+  const handleScenePointerMove = useCallback(
+    (e: ThreeEvent<PointerEvent>) => {
+      handlePointerMove(e);
+      if (activeContent === "bot-face" && isScreenObject(e.object)) {
+        e.stopPropagation();
+        screenHoveredRef.current = true;
+        gl.domElement.style.cursor = "pointer";
+        return;
+      }
+      screenHoveredRef.current = false;
+      gl.domElement.style.cursor = hoveredRef.current ? "pointer" : "";
+    },
+    [handlePointerMove, activeContent, gl, hoveredRef],
+  );
+
+  const handleScenePointerOut = useCallback(() => {
+    handlePointerOut();
+    screenHoveredRef.current = false;
+    gl.domElement.style.cursor = "";
+  }, [handlePointerOut, gl]);
+
+  return { handleSceneClick, handleScenePointerMove, handleScenePointerOut };
+}
+
+export function useSplineScene(
+  onReady?: () => void,
+  onEnterOs?: () => void,
+  isInteractive: boolean = true,
+) {
   const scene = useLoader(SplineLoader, "/scene.splinecode");
   const screenRef = useRef<THREE.Group | null>(null);
 
@@ -44,62 +160,36 @@ export function useSplineScene(onReady?: () => void) {
 
   // Notify when the first frame has successfully rendered within R3F loop
   useFrame(() => {
-    if (onReady && !hasNotifiedRef.current) {
+    if (!hasNotifiedRef.current) {
       hasNotifiedRef.current = true;
-      requestAnimationFrame(() => {
-        onReady();
-      });
+      onReady?.();
     }
   });
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (scene) {
-      scene.traverse((child: THREE.Object3D) => {
-        if (child instanceof THREE.Mesh) {
-          const isCup = /cup/i.test(child.name);
-          let isCactusDescendant = false;
-          let current: THREE.Object3D | null = child;
-          while (current) {
-            if (/small-cactus/i.test(current.name)) {
-              isCactusDescendant = true;
-              break;
-            }
-            current = current.parent;
-          }
-          child.castShadow = isCup || isCactusDescendant;
-          child.receiveShadow = true;
-        }
-        if (child instanceof THREE.Light) {
-          if (
-            !(
-              child instanceof THREE.AmbientLight ||
-              child instanceof THREE.HemisphereLight
-            )
-          ) {
-            child.castShadow = true;
-            if (child.shadow) {
-              child.shadow.mapSize.width = 2048;
-              child.shadow.mapSize.height = 2048;
-              child.shadow.bias = -0.0005;
-            }
-          }
-        }
-      });
-      screenRef.current = scene.getObjectByName("Top-CRT") as THREE.Group;
+      applyShadowsAndLighting(scene);
+      configureSceneCamera(scene);
     }
   }, [scene]);
 
+  useCrtMouseLook(screenRef, isInteractive);
+
   const screenMesh = useMemo(() => {
-    if (!scene) return null;
-    const group = scene.getObjectByName("Top-CRT") as THREE.Group;
-    return group ? findScreenMesh(group) : null;
+    return findScreenMesh(scene);
   }, [scene]);
 
-  useCrtMouseLook(screenRef);
+  // Store initial material in ref on first discovery so re-renders do not overwrite it.
+  const originalMaterialRef = useRef<THREE.Material | THREE.Material[] | null>(null);
 
-  // Only used by BotFace — Os is rendered via <Html> instead of a texture.
-  const originalMaterial = useMemo(() => {
-    return screenMesh ? screenMesh.material : null;
+  useLayoutEffect(() => {
+    if (!screenMesh) return;
+    if (screenMesh.parent instanceof THREE.Group) {
+      screenRef.current = screenMesh.parent;
+    }
+    if (!originalMaterialRef.current) {
+      originalMaterialRef.current = screenMesh.material;
+    }
   }, [screenMesh]);
 
   const handleBotFaceTextureReady = useMemo(() => {
@@ -124,90 +214,25 @@ export function useSplineScene(onReady?: () => void) {
 
   useEffect(() => {
     return () => {
-      if (screenMesh && originalMaterial) {
-        screenMesh.material = originalMaterial;
+      if (screenMesh && originalMaterialRef.current) {
+        screenMesh.material = originalMaterialRef.current;
       }
     };
-  }, [screenMesh, originalMaterial]);
+  }, [screenMesh]);
 
   const { gl } = useThree();
-  const activeContent = useScreenContent(screenMesh, originalMaterial);
-  const [screenHovered, setScreenHovered] = useState(false);
+  const activeContent = useScreenContent();
 
-  const { handleClick, handlePointerMove, handlePointerOut, hovered } =
-    useLampInteractivity(scene);
-
-  // Manage cursor style dynamically to prevent overlapping side effects
-  useEffect(() => {
-    const isHovered = hovered || screenHovered;
-    const canvasElement = gl.domElement;
-    if (canvasElement) {
-      canvasElement.style.cursor = isHovered ? "pointer" : "";
-    }
-    return () => {
-      if (canvasElement) {
-        canvasElement.style.cursor = "";
-      }
-    };
-  }, [hovered, screenHovered, gl]);
-
-  /** Walks up the ancestor chain to check if obj is a descendant of "Screen". */
-  const isScreenObject = (obj: THREE.Object3D | null): boolean => {
-    let current = obj;
-    while (current) {
-      if (current.name === "Screen") return true;
-      current = current.parent;
-    }
-    return false;
-  };
-
-  const handleSceneClick = useCallback(
-    (e: ThreeEvent<MouseEvent>) => {
-      // 1. Handle lamp click
-      handleClick(e);
-
-      // 2. Handle screen click-to-zoom when showing bot face
-      if (activeContent === "bot-face" && isScreenObject(e.object)) {
-        e.stopPropagation();
-        gsap.to(window, {
-          scrollTo: document.documentElement.scrollHeight,
-          duration: 1.2,
-          ease: "power2.inOut",
-        });
-      }
-    },
-    [handleClick, activeContent],
-  );
-
-  const handleScenePointerMove = useCallback(
-    (e: ThreeEvent<PointerEvent>) => {
-      // 1. Handle lamp hover check
-      handlePointerMove(e);
-
-      // 2. Handle screen hover check when showing bot face
-      if (activeContent === "bot-face" && isScreenObject(e.object)) {
-        e.stopPropagation();
-        setScreenHovered(true);
-        return;
-      }
-      setScreenHovered(false);
-    },
-    [handlePointerMove, activeContent],
-  );
-
-  const handleScenePointerOut = useCallback(() => {
-    handlePointerOut();
-    setScreenHovered(false);
-  }, [handlePointerOut]);
+  const { handleSceneClick, handleScenePointerMove, handleScenePointerOut } =
+    useSplineScenePointerEvents({ scene, activeContent, onEnterOs, gl });
 
   return {
     scene,
-    screenRef,
     screenMesh,
-    handleBotFaceTextureReady,
-    activeContent,
+    screenRef,
     handleSceneClick,
     handleScenePointerMove,
     handleScenePointerOut,
+    handleBotFaceTextureReady,
   };
 }

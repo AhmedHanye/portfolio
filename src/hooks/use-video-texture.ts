@@ -9,17 +9,90 @@ interface VideoTextureOptions {
   height?: string;
 }
 
+function applyVideoAttributes(video: HTMLVideoElement, options: VideoTextureOptions = {}): void {
+  const {
+    muted = true,
+    loop = true,
+    autoplay = true,
+    width = "256px",
+    height = "256px",
+  } = options;
+
+  video.muted = muted;
+  video.defaultMuted = muted;
+  video.loop = loop;
+  video.playsInline = true;
+  video.autoplay = autoplay;
+  video.crossOrigin = "anonymous";
+
+  Object.assign(video.style, {
+    position: "absolute",
+    top: "-9999px",
+    left: "-9999px",
+    width,
+    height,
+    opacity: "0",
+    pointerEvents: "none",
+  });
+}
+
+function createConfiguredVideo(
+  src: string,
+  options?: VideoTextureOptions,
+): HTMLVideoElement {
+  const video = document.createElement("video");
+  video.src = src;
+  applyVideoAttributes(video, options);
+  return video;
+}
+
+function createVideoTexture(video: HTMLVideoElement): THREE.VideoTexture {
+  const texture = new THREE.VideoTexture(video);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (texture as any).colorSpace = THREE.SRGBColorSpace ?? "srgb";
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  texture.generateMipmaps = false;
+  return texture;
+}
+
+const DEFAULT_OPTIONS: Required<VideoTextureOptions> = {
+  loop: true,
+  muted: true,
+  autoplay: true,
+  width: "256px",
+  height: "256px",
+};
+
+function setupVideoAutoplay(video: HTMLVideoElement, src: string): () => void {
+  const handlePlay = () => {
+    video.play().catch((err) => {
+      if (err.name !== "AbortError") {
+        console.warn(`[useVideoTexture] Autoplay blocked for ${src}:`, err);
+      }
+    });
+  };
+
+  handlePlay();
+  window.addEventListener("click", handlePlay, { once: true });
+  return () => window.removeEventListener("click", handlePlay);
+}
+
+function cleanupVideo(video: HTMLVideoElement, texture: THREE.VideoTexture): void {
+  video.pause();
+  video.src = "";
+  video.load();
+  if (video.parentNode) {
+    video.parentNode.removeChild(video);
+  }
+  texture.dispose();
+}
+
 export function useVideoTexture(
   src: string,
   onTextureReady: (texture: THREE.VideoTexture) => void,
-  options?: VideoTextureOptions,
+  options: VideoTextureOptions = DEFAULT_OPTIONS,
 ): void {
-  const loop = options?.loop ?? true;
-  const muted = options?.muted ?? true;
-  const autoplay = options?.autoplay ?? true;
-  const width = options?.width ?? "256px";
-  const height = options?.height ?? "256px";
-
   const onTextureReadyRef = useRef<(texture: THREE.VideoTexture) => void>(onTextureReady);
 
   useEffect(() => {
@@ -27,75 +100,18 @@ export function useVideoTexture(
   }, [onTextureReady]);
 
   useEffect(() => {
-    // Create the video element
-    const video = document.createElement("video");
-    video.src = src;
-
-    // Configure settings for video playback
-    video.muted = muted;
-    if (muted) {
-      video.setAttribute("muted", "");
-    }
-    video.loop = loop;
-    if (loop) {
-      video.setAttribute("loop", "");
-    }
-    video.playsInline = true;
-    video.setAttribute("playsinline", "");
-    video.autoplay = autoplay;
-    if (autoplay) {
-      video.setAttribute("autoplay", "");
-    }
-    video.crossOrigin = "anonymous";
-    video.setAttribute("crossorigin", "anonymous");
-
-    // Position video element off-screen
-    video.style.position = "absolute";
-    video.style.top = "-9999px";
-    video.style.left = "-9999px";
-    video.style.width = width;
-    video.style.height = height;
-    video.style.opacity = "0";
-    video.style.pointerEvents = "none";
+    const video = createConfiguredVideo(src, options);
     document.body.appendChild(video);
 
-    // Create the VideoTexture
-    const texture = new THREE.VideoTexture(video);
-    // colorSpace was added in Three.js r152; @types/three is pinned at 0.151.0
-    // so we cast. Upgrade @types/three when upgrading three itself.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (texture as any).colorSpace = THREE.SRGBColorSpace ?? "srgb";
-    texture.minFilter = THREE.LinearFilter;
-    texture.magFilter = THREE.LinearFilter;
-    texture.generateMipmaps = false;
-
+    const texture = createVideoTexture(video);
     onTextureReadyRef.current(texture);
 
-    const handlePlay = () => {
-      video.play().catch((err) => {
-        if (err.name !== "AbortError") {
-          console.warn(
-            `[useVideoTexture] Autoplay blocked for ${src}, waiting for user interaction:`,
-            err,
-          );
-        }
-      });
-    };
-
-    if (autoplay) {
-      handlePlay();
-      window.addEventListener("click", handlePlay, { once: true });
-    }
+    const cleanupAutoplay = options.autoplay !== false ? setupVideoAutoplay(video, src) : undefined;
 
     return () => {
-      window.removeEventListener("click", handlePlay);
-      video.pause();
-      video.src = "";
-      video.load();
-      if (video.parentNode) {
-        video.parentNode.removeChild(video);
-      }
-      texture.dispose();
+      cleanupAutoplay?.();
+      cleanupVideo(video, texture);
     };
-  }, [src, loop, muted, autoplay, width, height]);
+  }, [src, options]);
 }
+

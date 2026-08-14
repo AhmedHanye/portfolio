@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "next-devtools": {
+      "command": "next-devtools-mcp"
+    }
+  }
+}

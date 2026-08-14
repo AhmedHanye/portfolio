@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "entry": [
+    "src/app/**/page.{ts,tsx,js,jsx}",
+    "src/app/**/layout.{ts,tsx,js,jsx}",
+    "src/app/**/template.{ts,tsx,js,jsx}",
+    "src/app/**/loading.{ts,tsx,js,jsx}",
+    "src/app/**/error.{ts,tsx,js,jsx}",
+    "src/app/**/not-found.{ts,tsx,js,jsx}",
+    "src/app/**/route.{ts,tsx,js,jsx}",
+    "src/proxy.ts",
+    "src/i18n/request.ts",
+    "src/i18n/routing.ts",
+    "next.config.ts"
+  ],
+  "duplicates": {
+    "minOccurrences": 3
+  },
+  "rules": {}
+}

@@ -91,7 +91,7 @@ export default function SplineProgressIndicator({
         {/* Monospace percentage text */}
         <span
           ref={percentTextRef}
-          className="font-mono tracking-[0.2em] text-white/80 uppercase"
+          className="font-mono tracking-widest text-white/80 uppercase"
         >
           Loading 0%
         </span>

@@ -22,6 +22,67 @@ interface ProjectItemProps {
   isPrivate?: boolean;
 }
 
+function openExternalLink(url?: string): void {
+  if (url && (url.startsWith("https://") || url.startsWith("http://"))) {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+}
+
+function ProjectTechBadgeList({ technologies }: { technologies?: string[] }) {
+  if (!technologies || technologies.length === 0) return null;
+
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", margin: "2px 0" }}>
+      {technologies.map((tech) => (
+        <Frame
+          key={tech}
+          variant="well"
+          style={{
+            padding: "2px 6px",
+            fontSize: "10px",
+            fontWeight: "bold",
+            background: "#ececec",
+            fontFamily: "ms_sans_serif, sans-serif",
+          }}
+        >
+          {tech}
+        </Frame>
+      ))}
+    </div>
+  );
+}
+
+function ProjectActions({
+  websiteUrl,
+  isPrivate,
+  launchAppLabel,
+  privateRepoLabel,
+  sourceCodeLabel,
+  onSourceCodeClick,
+}: {
+  websiteUrl?: string;
+  isPrivate?: boolean;
+  launchAppLabel: string;
+  privateRepoLabel: string;
+  sourceCodeLabel: string;
+  onSourceCodeClick: () => void;
+}) {
+  const codeLabel = isPrivate ? `🔒 ${privateRepoLabel}` : sourceCodeLabel;
+
+  return (
+    <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", alignItems: "center" }}>
+      {websiteUrl && (
+        <Button onClick={() => openExternalLink(websiteUrl)}>
+          {launchAppLabel}
+        </Button>
+      )}
+      <Button onClick={onSourceCodeClick}>
+        {codeLabel}
+      </Button>
+    </div>
+  );
+}
+
 function ProjectCard({
   title,
   description,
@@ -32,18 +93,12 @@ function ProjectCard({
 }: ProjectItemProps) {
   const t = useTranslations("OS");
 
-  const handleOpenLink = (url?: string) => {
-    if (url && (url.startsWith("https://") || url.startsWith("http://"))) {
-      window.open(url, "_blank", "noopener,noreferrer");
-    }
-  };
-
   const handleSourceCodeClick = () => {
     if (isPrivate) {
       alert(t("projects.privateRepoAlert"));
-    } else if (githubUrl) {
-      handleOpenLink(githubUrl);
+      return;
     }
+    openExternalLink(githubUrl);
   };
 
   return (
@@ -53,38 +108,16 @@ function ProjectCard({
           {description}
         </p>
 
-        {technologies && technologies.length > 0 && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", margin: "2px 0" }}>
-            {technologies.map((tech) => (
-              <Frame
-                key={tech}
-                variant="well"
-                style={{
-                  padding: "2px 6px",
-                  fontSize: "10px",
-                  fontWeight: "bold",
-                  background: "#ececec",
-                  fontFamily: "ms_sans_serif, sans-serif",
-                }}
-              >
-                {tech}
-              </Frame>
-            ))}
-          </div>
-        )}
-
+        <ProjectTechBadgeList technologies={technologies} />
         <Separator />
-
-        <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", alignItems: "center" }}>
-          {websiteUrl && (
-            <Button onClick={() => handleOpenLink(websiteUrl)}>
-              {t("projects.launchApp")}
-            </Button>
-          )}
-          <Button onClick={handleSourceCodeClick}>
-            {isPrivate ? `🔒 ${t("projects.privateRepo")}` : t("projects.sourceCode")}
-          </Button>
-        </div>
+        <ProjectActions
+          websiteUrl={websiteUrl}
+          isPrivate={isPrivate}
+          launchAppLabel={t("projects.launchApp")}
+          privateRepoLabel={t("projects.privateRepo")}
+          sourceCodeLabel={t("projects.sourceCode")}
+          onSourceCodeClick={handleSourceCodeClick}
+        />
       </div>
     </GroupBox>
   );

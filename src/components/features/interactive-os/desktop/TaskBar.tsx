@@ -111,11 +111,110 @@ function StartMenuDropdown({
   );
 }
 
+interface TaskbarButtonProps {
+  id: WindowId;
+  icon: React.ReactNode;
+  titleKey: string;
+  isOpen: boolean;
+  isActive: boolean;
+  maxBtnWidth: string;
+  onToggle: (id: WindowId) => void;
+  t: (key: string) => string;
+}
+
+function TaskbarWindowButton({
+  id,
+  icon,
+  titleKey,
+  isOpen,
+  isActive,
+  maxBtnWidth,
+  onToggle,
+  t,
+}: TaskbarButtonProps) {
+  if (!isOpen) return null;
+
+  return (
+    <Button
+      active={isActive}
+      onClick={() => onToggle(id)}
+      style={{
+        fontWeight: isActive ? "bold" : "normal",
+        display: "flex",
+        alignItems: "center",
+        gap: "4px",
+        padding: "0 6px",
+        height: "26px",
+        maxWidth: maxBtnWidth,
+        minWidth: 0,
+        overflow: "hidden",
+      }}
+    >
+      {icon}
+      <span
+        style={{
+          fontSize: "11px",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {t(titleKey)}
+      </span>
+    </Button>
+  );
+}
+
+const TASKBAR_WINDOW_CONFIGS: Array<{
+  id: WindowId;
+  icon: React.ReactNode;
+  titleKey: string;
+}> = [
+  {
+    id: "system",
+    icon: <Computer variant="16x16_4" style={{ width: "16px", height: "16px", flexShrink: 0 }} />,
+    titleKey: "taskbar.system",
+  },
+  {
+    id: "about",
+    icon: <Wordpad variant="16x16_4" style={{ width: "16px", height: "16px", flexShrink: 0 }} />,
+    titleKey: "taskbar.about",
+  },
+  {
+    id: "projects",
+    icon: <Folder variant="16x16_4" style={{ width: "16px", height: "16px", flexShrink: 0 }} />,
+    titleKey: "taskbar.projects",
+  },
+  {
+    id: "skills",
+    icon: <Progman11 variant="32x32_4" style={{ width: "16px", height: "16px", flexShrink: 0 }} />,
+    titleKey: "taskbar.skills",
+  },
+  {
+    id: "cDrive",
+    icon: <CdMusic variant="16x16_4" style={{ width: "16px", height: "16px", flexShrink: 0 }} />,
+    titleKey: "taskbar.cDrive",
+  },
+];
+
 interface ActiveWindowButtonsProps {
   windows: WindowsState;
   activeWindowId: WindowId | null;
   toggleMinimize: (id: WindowId) => void;
   t: (key: string) => string;
+}
+
+function isTaskbarWindowActive(
+  win: WindowsState[WindowId] | undefined,
+  activeWindowId: WindowId | null,
+  id: WindowId,
+): boolean {
+  if (!win || !win.isOpen || win.isMinimized) return false;
+  return activeWindowId === id;
+}
+
+function isWindowOpen(win: WindowsState[WindowId] | undefined): boolean {
+  return win ? win.isOpen : false;
 }
 
 function ActiveWindowButtons({
@@ -127,75 +226,22 @@ function ActiveWindowButtons({
   const { isCompact } = useCompactViewport();
   const maxBtnWidth = isCompact ? "100px" : "150px";
 
-  const windowConfigs: Array<{
-    id: WindowId;
-    icon: React.ReactNode;
-    titleKey: string;
-  }> = [
-    {
-      id: "system",
-      icon: <Computer variant="16x16_4" style={{ width: "16px", height: "16px", flexShrink: 0 }} />,
-      titleKey: "taskbar.system",
-    },
-    {
-      id: "about",
-      icon: <Wordpad variant="16x16_4" style={{ width: "16px", height: "16px", flexShrink: 0 }} />,
-      titleKey: "taskbar.about",
-    },
-    {
-      id: "projects",
-      icon: <Folder variant="16x16_4" style={{ width: "16px", height: "16px", flexShrink: 0 }} />,
-      titleKey: "taskbar.projects",
-    },
-    {
-      id: "skills",
-      icon: <Progman11 variant="32x32_4" style={{ width: "16px", height: "16px", flexShrink: 0 }} />,
-      titleKey: "taskbar.skills",
-    },
-    {
-      id: "cDrive",
-      icon: <CdMusic variant="16x16_4" style={{ width: "16px", height: "16px", flexShrink: 0 }} />,
-      titleKey: "taskbar.cDrive",
-    },
-  ];
-
   return (
     <>
-      {windowConfigs.map(({ id, icon, titleKey }) => {
+      {TASKBAR_WINDOW_CONFIGS.map(({ id, icon, titleKey }) => {
         const win = windows[id];
-        if (!win?.isOpen) return null;
-
-        const isCurrentActive = !win.isMinimized && activeWindowId === id;
-
         return (
-          <Button
+          <TaskbarWindowButton
             key={id}
-            active={isCurrentActive}
-            onClick={() => toggleMinimize(id)}
-            style={{
-              fontWeight: isCurrentActive ? "bold" : "normal",
-              display: "flex",
-              alignItems: "center",
-              gap: "4px",
-              padding: "0 6px",
-              height: "26px",
-              maxWidth: maxBtnWidth,
-              minWidth: 0,
-              overflow: "hidden",
-            }}
-          >
-            {icon}
-            <span
-              style={{
-                fontSize: "11px",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {t(titleKey)}
-            </span>
-          </Button>
+            id={id}
+            icon={icon}
+            titleKey={titleKey}
+            isOpen={isWindowOpen(win)}
+            isActive={isTaskbarWindowActive(win, activeWindowId, id)}
+            maxBtnWidth={maxBtnWidth}
+            onToggle={toggleMinimize}
+            t={t}
+          />
         );
       })}
     </>

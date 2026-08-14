@@ -1,0 +1,13 @@
+{
+  "$schema": "https://react.doctor/schema/config.json",
+  "ignore": {
+    "files": [
+      ".next/**",
+      "node_modules/**",
+      "public/**",
+      "out/**",
+      "dist/**",
+      "build/**"
+    ]
+  }
+}

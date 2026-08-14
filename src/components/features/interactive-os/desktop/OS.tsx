@@ -40,44 +40,24 @@ const GlobalStyles = createGlobalStyle`
   
   .win95-screen-container {
     font-family: 'ms_sans_serif', sans-serif;
-  }
-
-  /* Apply classic Windows 95 cursors globally within the OS container */
-  .win95-screen-container,
-  .win95-screen-container * {
     cursor: url('/cursors/Arrow.png'), auto;
   }
-  
-  .win95-screen-container a,
+
   .win95-screen-container button,
-  .win95-screen-container select,
-  .win95-screen-container input[type="submit"],
-  .win95-screen-container input[type="button"],
-  .win95-screen-container input[type="reset"],
+  .win95-screen-container a,
   .win95-screen-container [role="button"],
-  .win95-screen-container .cursor-pointer,
-  .win95-screen-container button *,
-  .win95-screen-container .react95-btn,
-  .win95-screen-container .react95-btn *,
-  .win95-screen-container .react95-tab,
-  .win95-screen-container .react95-tab * {
-    cursor: url('/cursors/HandPointer.png'), pointer !important;
+  .win95-screen-container .cursor-pointer {
+    cursor: url('/cursors/HandPointer.png'), pointer;
   }
-  
-  .win95-screen-container input[type="text"],
-  .win95-screen-container input[type="email"],
-  .win95-screen-container input[type="password"],
-  .win95-screen-container input[type="search"],
-  .win95-screen-container input[type="number"],
+
+  .win95-screen-container input,
   .win95-screen-container textarea {
-    cursor: url('/cursors/Text.png'), text !important;
+    cursor: url('/cursors/Text.png'), text;
   }
-  
-  /* Fix react95 legend positioning under RTL direction */
-  .win95-screen-container[dir="rtl"] legend,
+
   [dir="rtl"] .win95-screen-container legend {
-    left: auto !important;
-    right: 8px !important;
+    left: auto;
+    right: 8px;
   }
 `;
 

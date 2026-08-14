@@ -18,6 +18,63 @@ interface DesktopIconProps {
   isShortScreen: boolean;
 }
 
+function handleIconTap(
+  id: DesktopIconId,
+  isMobile: boolean,
+  isDoubleTap: boolean,
+  onSelect: (id: DesktopIconId) => void,
+  onOpen: (id: DesktopIconId) => void,
+): void {
+  if (isMobile || isDoubleTap) {
+    onSelect(id);
+    onOpen(id);
+    return;
+  }
+  onSelect(id);
+}
+
+function getIconGraphicStyle(isSelected: boolean, isShortScreen: boolean): React.CSSProperties {
+  const sizePx = isShortScreen ? "32px" : "38px";
+  return {
+    width: sizePx,
+    height: sizePx,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    pointerEvents: "none",
+    filter: isSelected ? "drop-shadow(0 0 1px #000080)" : "none",
+    opacity: isSelected ? 0.85 : 1,
+  };
+}
+
+function getIconLabelBoxStyle(isSelected: boolean, isShortScreen: boolean): React.CSSProperties {
+  return {
+    marginTop: isShortScreen ? "2px" : "4px",
+    padding: "1px 4px",
+    backgroundColor: isSelected ? "#000080" : "transparent",
+    outline: isSelected ? "1px dotted #ffffff" : "none",
+    borderRadius: "0px",
+    maxWidth: "100%",
+  };
+}
+
+function getIconLabelTextStyle(isSelected: boolean, isShortScreen: boolean): React.CSSProperties {
+  return {
+    color: "#fff",
+    fontSize: isShortScreen ? "10px" : "11px",
+    fontFamily: "ms_sans_serif, sans-serif",
+    textShadow: isSelected
+      ? "none"
+      : "1px 1px #000, -1px -1px #000, 1px -1px #000, -1px 1px #000",
+    textAlign: "center",
+    userSelect: "none",
+    pointerEvents: "none",
+    lineHeight: "1.2",
+    display: "block",
+    wordBreak: "break-word",
+  };
+}
+
 function DesktopIcon({
   id,
   icon,
@@ -35,25 +92,17 @@ function DesktopIcon({
     const now = Date.now();
     const isDoubleTap = now - lastTouchRef.current < 450;
     lastTouchRef.current = now;
-
-    if (isMobile) {
-      // Mobile / touch screen: single tap selects & opens smoothly
-      onSelect(id);
-      onOpen(id);
-    } else {
-      // Desktop: single click selects, double tap / fast click opens
-      if (isDoubleTap) {
-        onOpen(id);
-      } else {
-        onSelect(id);
-      }
-    }
+    handleIconTap(id, isMobile, isDoubleTap, onSelect, onOpen);
   };
 
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onOpen(id);
   };
+
+  const graphicStyle = getIconGraphicStyle(isSelected, isShortScreen);
+  const labelBoxStyle = getIconLabelBoxStyle(isSelected, isShortScreen);
+  const labelTextStyle = getIconLabelTextStyle(isSelected, isShortScreen);
 
   return (
     <button
@@ -75,52 +124,39 @@ function DesktopIcon({
       onDoubleClick={handleDoubleClick}
       title={label}
     >
-      <div
-        style={{
-          width: isShortScreen ? "32px" : "38px",
-          height: isShortScreen ? "32px" : "38px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          pointerEvents: "none",
-          filter: isSelected ? "drop-shadow(0 0 1px #000080)" : "none",
-          opacity: isSelected ? 0.85 : 1,
-        }}
-      >
-        {icon}
-      </div>
-      <div
-        style={{
-          marginTop: isShortScreen ? "2px" : "4px",
-          padding: "1px 4px",
-          backgroundColor: isSelected ? "#000080" : "transparent",
-          outline: isSelected ? "1px dotted #ffffff" : "none",
-          borderRadius: "0px",
-          maxWidth: "100%",
-        }}
-      >
-        <span
-          style={{
-            color: "#fff",
-            fontSize: isShortScreen ? "10px" : "11px",
-            fontFamily: "ms_sans_serif, sans-serif",
-            textShadow: isSelected
-              ? "none"
-              : "1px 1px #000, -1px -1px #000, 1px -1px #000, -1px 1px #000",
-            textAlign: "center",
-            userSelect: "none",
-            pointerEvents: "none",
-            lineHeight: "1.2",
-            display: "block",
-            wordBreak: "break-word",
-          }}
-        >
-          {label}
-        </span>
+      <div style={graphicStyle}>{icon}</div>
+      <div style={labelBoxStyle}>
+        <span style={labelTextStyle}>{label}</span>
       </div>
     </button>
   );
 }
+
+function getDesktopIconsContainerStyle(isRtl: boolean, isShortScreen: boolean): React.CSSProperties {
+  return {
+    position: "absolute",
+    left: isRtl ? "auto" : "12px",
+    right: isRtl ? "12px" : "auto",
+    top: "10px",
+    display: "flex",
+    flexDirection: "column",
+    gap: isShortScreen ? "8px" : "16px",
+    zIndex: 1,
+  };
+}
+
+const DESKTOP_ICON_LIST: Array<{
+  id: DesktopIconId;
+  labelKey: string;
+  renderIcon: (size: string) => React.ReactNode;
+}> = [
+  { id: "system", labelKey: "desktop.myComputer", renderIcon: (s) => <Computer variant="32x32_4" style={{ width: s, height: s }} /> },
+  { id: "about", labelKey: "desktop.aboutMe", renderIcon: (s) => <Wordpad variant="32x32_4" style={{ width: s, height: s }} /> },
+  { id: "projects", labelKey: "desktop.myProjects", renderIcon: (s) => <Folder variant="32x32_4" style={{ width: s, height: s }} /> },
+  { id: "skills", labelKey: "desktop.mySkills", renderIcon: (s) => <Progman11 variant="32x32_4" style={{ width: s, height: s }} /> },
+  { id: "cDrive", labelKey: "desktop.cDrive", renderIcon: (s) => <CdMusic variant="32x32_4" style={{ width: s, height: s }} /> },
+  { id: "webPortfolio", labelKey: "desktop.webPortfolio", renderIcon: (s) => <Globe variant="32x32_4" style={{ width: s, height: s }} /> },
+];
 
 interface DesktopIconsProps {
   selectedId: DesktopIconId | null;
@@ -142,91 +178,31 @@ export default function DesktopIcons({
 
   const iconSize = isShortScreen ? "28px" : "34px";
 
-  const handleIconSelect = (id: DesktopIconId) => {
-    onSelect(id);
-  };
-
   const handleIconOpen = (id: DesktopIconId) => {
     onSelect(id);
     if (id === "webPortfolio") {
       onExitPortfolio();
-    } else {
-      openWindow(id);
+      return;
     }
+    openWindow(id);
   };
 
+  const containerStyle = getDesktopIconsContainerStyle(isRtl, isShortScreen);
+
   return (
-    <div
-      style={{
-        position: "absolute",
-        left: isRtl ? "auto" : "12px",
-        right: isRtl ? "12px" : "auto",
-        top: "10px",
-        display: "flex",
-        flexDirection: "column",
-        gap: isShortScreen ? "8px" : "16px",
-        zIndex: 1,
-      }}
-    >
-      <DesktopIcon
-        id="system"
-        icon={<Computer variant="32x32_4" style={{ width: iconSize, height: iconSize }} />}
-        label={t("desktop.myComputer")}
-        isSelected={selectedId === "system"}
-        onSelect={handleIconSelect}
-        onOpen={handleIconOpen}
-        isShortScreen={isShortScreen}
-      />
-
-      <DesktopIcon
-        id="about"
-        icon={<Wordpad variant="32x32_4" style={{ width: iconSize, height: iconSize }} />}
-        label={t("desktop.aboutMe")}
-        isSelected={selectedId === "about"}
-        onSelect={handleIconSelect}
-        onOpen={handleIconOpen}
-        isShortScreen={isShortScreen}
-      />
-
-      <DesktopIcon
-        id="projects"
-        icon={<Folder variant="32x32_4" style={{ width: iconSize, height: iconSize }} />}
-        label={t("desktop.myProjects")}
-        isSelected={selectedId === "projects"}
-        onSelect={handleIconSelect}
-        onOpen={handleIconOpen}
-        isShortScreen={isShortScreen}
-      />
-
-      <DesktopIcon
-        id="skills"
-        icon={<Progman11 variant="32x32_4" style={{ width: iconSize, height: iconSize }} />}
-        label={t("desktop.mySkills")}
-        isSelected={selectedId === "skills"}
-        onSelect={handleIconSelect}
-        onOpen={handleIconOpen}
-        isShortScreen={isShortScreen}
-      />
-
-      <DesktopIcon
-        id="cDrive"
-        icon={<CdMusic variant="32x32_4" style={{ width: iconSize, height: iconSize }} />}
-        label={t("desktop.cDrive")}
-        isSelected={selectedId === "cDrive"}
-        onSelect={handleIconSelect}
-        onOpen={handleIconOpen}
-        isShortScreen={isShortScreen}
-      />
-
-      <DesktopIcon
-        id="webPortfolio"
-        icon={<Globe variant="32x32_4" style={{ width: iconSize, height: iconSize }} />}
-        label={t("desktop.webPortfolio")}
-        isSelected={selectedId === "webPortfolio"}
-        onSelect={handleIconSelect}
-        onOpen={handleIconOpen}
-        isShortScreen={isShortScreen}
-      />
+    <div style={containerStyle}>
+      {DESKTOP_ICON_LIST.map(({ id, labelKey, renderIcon }) => (
+        <DesktopIcon
+          key={id}
+          id={id}
+          icon={renderIcon(iconSize)}
+          label={t(labelKey)}
+          isSelected={selectedId === id}
+          onSelect={onSelect}
+          onOpen={handleIconOpen}
+          isShortScreen={isShortScreen}
+        />
+      ))}
     </div>
   );
 }

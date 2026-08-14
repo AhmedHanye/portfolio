@@ -1,9 +1,6 @@
-import WorkspaceSpline from "@/components/WorkspaceSpline";
+import HomeLanding from "@/components/features/home/HomeLanding";
 
 export default async function Home() {
-  return (
-    <main id="hero-scroll-container" className="relative h-[200vh]">
-      <WorkspaceSpline />
-    </main>
-  );
+  return <HomeLanding />;
 }
+

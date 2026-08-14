@@ -1,0 +1,48 @@
+# Fallow — codebase intelligence for TypeScript and JavaScript.
+# Reports dead code, duplication, complexity hotspots, architecture boundary violations, and styling drift.
+#
+# Docs: https://fallow.mintlify.app/integrations/ci
+# Source: https://github.com/fallow-rs/fallow
+
+name: Fallow
+
+on:
+  # Scans the PR's changed files and provides diagnostics and reviews relative to the base branch.
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  # Scans `main` on every push to track health score trends and detect regressions.
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+  id-token: write       # Enables short-lived Fallow GitHub App token for branded PR comments & reviews
+  pull-requests: write  # Allows posting PR sticky summary comments & inline review comments
+  checks: write         # Allows emitting inline PR annotations and check run summaries
+
+# Cancels any in-flight scan for the same PR (or branch, on push) when a new commit arrives.
+concurrency:
+  group: fallow-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fallow:
+    runs-on: ubuntu-latest
+    steps:
+      # fetch-depth: 0 gives Fallow full git history to diff against the PR merge base and detect churn hotspots.
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: fallow-rs/fallow@v3
+        with:
+          # Automatically resolves the fallow CLI version from package.json devDependencies
+          # Scopes analysis to changed files on pull requests (auto-detected from PR base SHA)
+          auto-changed-since: true
+          annotations: true
+          comment: true
+          review-comments: true
+          # Gate level & customizations:
+          # fail-on-issues: true    # Set to false for advisory-only mode
+          # score: true             # Computes 0-100 codebase health score in summary
+          # trend: true             # Compares metrics against previous snapshots

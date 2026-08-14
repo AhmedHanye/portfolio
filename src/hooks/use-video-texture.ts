@@ -9,6 +9,56 @@ interface VideoTextureOptions {
   height?: string;
 }
 
+function createConfiguredVideo(
+  src: string,
+  options?: VideoTextureOptions,
+): HTMLVideoElement {
+  const video = document.createElement("video");
+  video.src = src;
+
+  const {
+    muted = true,
+    loop = true,
+    autoplay = true,
+    width = "256px",
+    height = "256px",
+  } = options || {};
+
+  video.muted = muted;
+  video.loop = loop;
+  video.playsInline = true;
+  video.autoplay = autoplay;
+  video.crossOrigin = "anonymous";
+
+  if (muted) video.setAttribute("muted", "");
+  if (loop) video.setAttribute("loop", "");
+  if (autoplay) video.setAttribute("autoplay", "");
+  video.setAttribute("playsinline", "");
+  video.setAttribute("crossorigin", "anonymous");
+
+  Object.assign(video.style, {
+    position: "absolute",
+    top: "-9999px",
+    left: "-9999px",
+    width,
+    height,
+    opacity: "0",
+    pointerEvents: "none",
+  });
+
+  return video;
+}
+
+function createVideoTexture(video: HTMLVideoElement): THREE.VideoTexture {
+  const texture = new THREE.VideoTexture(video);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (texture as any).colorSpace = THREE.SRGBColorSpace ?? "srgb";
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  texture.generateMipmaps = false;
+  return texture;
+}
+
 export function useVideoTexture(
   src: string,
   onTextureReady: (texture: THREE.VideoTexture) => void,
@@ -27,48 +77,10 @@ export function useVideoTexture(
   }, [onTextureReady]);
 
   useEffect(() => {
-    // Create the video element
-    const video = document.createElement("video");
-    video.src = src;
-
-    // Configure settings for video playback
-    video.muted = muted;
-    if (muted) {
-      video.setAttribute("muted", "");
-    }
-    video.loop = loop;
-    if (loop) {
-      video.setAttribute("loop", "");
-    }
-    video.playsInline = true;
-    video.setAttribute("playsinline", "");
-    video.autoplay = autoplay;
-    if (autoplay) {
-      video.setAttribute("autoplay", "");
-    }
-    video.crossOrigin = "anonymous";
-    video.setAttribute("crossorigin", "anonymous");
-
-    // Position video element off-screen
-    video.style.position = "absolute";
-    video.style.top = "-9999px";
-    video.style.left = "-9999px";
-    video.style.width = width;
-    video.style.height = height;
-    video.style.opacity = "0";
-    video.style.pointerEvents = "none";
+    const video = createConfiguredVideo(src, options);
     document.body.appendChild(video);
 
-    // Create the VideoTexture
-    const texture = new THREE.VideoTexture(video);
-    // colorSpace was added in Three.js r152; @types/three is pinned at 0.151.0
-    // so we cast. Upgrade @types/three when upgrading three itself.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (texture as any).colorSpace = THREE.SRGBColorSpace ?? "srgb";
-    texture.minFilter = THREE.LinearFilter;
-    texture.magFilter = THREE.LinearFilter;
-    texture.generateMipmaps = false;
-
+    const texture = createVideoTexture(video);
     onTextureReadyRef.current(texture);
 
     const handlePlay = () => {
@@ -97,5 +109,6 @@ export function useVideoTexture(
       }
       texture.dispose();
     };
-  }, [src, loop, muted, autoplay, width, height]);
+  }, [src, loop, muted, autoplay, width, height, options]);
 }
+

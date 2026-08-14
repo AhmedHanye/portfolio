@@ -8,7 +8,7 @@ export default function OsLoader() {
       muted
       playsInline
       src="/windows_95.webm"
-      className="h-full w-full object-cover"
+      className="size-full object-fill select-none pointer-events-none"
     />
   );
 }

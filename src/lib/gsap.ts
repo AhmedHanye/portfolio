@@ -31,9 +31,4 @@ export {
   gsap,
   useGSAP,
   ScrollTrigger,
-  ScrollSmoother,
-  ScrollToPlugin,
-  SplitText,
-  ScrambleTextPlugin,
-  Flip,
 };

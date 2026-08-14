@@ -21,11 +21,8 @@ export function useCanvasTexture(
 
   useEffect(() => {
     drawRef.current = draw;
-  }, [draw]);
-
-  useEffect(() => {
     onTextureReadyRef.current = onTextureReady;
-  }, [onTextureReady]);
+  });
 
   useEffect(() => {
     const canvas = document.createElement("canvas");
@@ -50,7 +47,7 @@ export function useCanvasTexture(
     const render = () => {
       drawRef.current(ctx, frame);
       texture.needsUpdate = true;
-      frame++;
+      frame += 1;
       animationFrameId = requestAnimationFrame(render);
     };
 

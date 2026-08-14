@@ -8,9 +8,19 @@ export const size = {
 };
 export const contentType = "image/png";
 
-// fallow-ignore-next-line unused-export
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
+}
+
+function getOgContentStrings(isArabic: boolean) {
+  return {
+    windowTitle: isArabic
+      ? "Ahmed_OS [Arabic Edition // Interactive 3D Workspace]"
+      : "Ahmed_OS [Interactive 3D Workspace]",
+    categoryBadge: isArabic
+      ? "RETRO OS EDITION // FULL-STACK SOFTWARE ENGINEER"
+      : "SYSTEM PROFILE // FULL-STACK SOFTWARE ENGINEER",
+  };
 }
 
 export default async function Image({
@@ -22,14 +32,7 @@ export default async function Image({
   const locale = (resolvedParams?.locale || "en") as Locale;
   const isArabic = locale === "ar";
 
-  const windowTitle = isArabic
-    ? "Ahmed_OS [Arabic Edition // Interactive 3D Workspace]"
-    : "Ahmed_OS [Interactive 3D Workspace]";
-
-  const categoryBadge = isArabic
-    ? "RETRO OS EDITION // FULL-STACK SOFTWARE ENGINEER"
-    : "SYSTEM PROFILE // FULL-STACK SOFTWARE ENGINEER";
-
+  const { windowTitle, categoryBadge } = getOgContentStrings(isArabic);
   const name = "Ahmed Hanye";
   const role = "Full-Stack Software Engineer";
   const tagline =

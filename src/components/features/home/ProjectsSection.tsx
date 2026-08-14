@@ -52,6 +52,111 @@ const PROJECTS_DATA: ProjectCardData[] = [
   },
 ];
 
+interface HomeProjectCardProps {
+  proj: (typeof PROJECTS_DATA)[number];
+  t: (key: string) => string;
+  onOpenLink: (url?: string) => void;
+  onPrivateClick: () => void;
+}
+
+function HomeProjectPrivateBadge({ isPrivate, label }: { isPrivate?: boolean; label: string }) {
+  if (!isPrivate) return null;
+  return (
+    <span className="text-[11px] font-bold text-amber-800 bg-amber-100 border border-amber-300 px-2 py-0.5">
+      🔒 {label}
+    </span>
+  );
+}
+
+interface HomeProjectCardActionsProps {
+  liveUrl?: string;
+  githubUrl?: string;
+  isPrivate?: boolean;
+  t: (key: string) => string;
+  onOpenLink: (url?: string) => void;
+  onPrivateClick: () => void;
+}
+
+function HomeProjectCardActions({
+  liveUrl,
+  githubUrl,
+  isPrivate,
+  t,
+  onOpenLink,
+  onPrivateClick,
+}: HomeProjectCardActionsProps) {
+  return (
+    <div className="flex flex-wrap items-center justify-end gap-2 pt-1">
+      {liveUrl && (
+        <Button
+          primary
+          onClick={() => onOpenLink(liveUrl)}
+          style={{ fontWeight: "bold", fontSize: "11px" }}
+        >
+          🚀 {t("launchLive")}
+        </Button>
+      )}
+
+      {githubUrl && (
+        <Button
+          onClick={() => onOpenLink(githubUrl)}
+          style={{ fontWeight: "bold", fontSize: "11px" }}
+        >
+          💻 {t("viewCode")}
+        </Button>
+      )}
+
+      {isPrivate && (
+        <Button
+          onClick={onPrivateClick}
+          style={{ fontSize: "11px", color: "#333" }}
+        >
+          🔒 {t("privateOrg")}
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function HomeProjectCard({
+  proj,
+  t,
+  onOpenLink,
+  onPrivateClick,
+}: HomeProjectCardProps) {
+  return (
+    <GroupBox
+      className="project-card-item"
+      label={`📁 ${t(proj.titleKey)}`}
+      style={{ backgroundColor: "#fbfbfb" }}
+    >
+      <div className="p-2 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="text-xs sm:text-sm font-bold text-[#000080]">
+            {t(proj.taglineKey)}
+          </span>
+          <HomeProjectPrivateBadge isPrivate={proj.isPrivate} label={t("privateOrg")} />
+        </div>
+
+        <p className="text-xs sm:text-base text-neutral-800 leading-relaxed m-0">
+          {t(proj.descKey)}
+        </p>
+
+        <Separator style={{ margin: "8px 0" }} />
+
+        <HomeProjectCardActions
+          liveUrl={proj.liveUrl}
+          githubUrl={proj.githubUrl}
+          isPrivate={proj.isPrivate}
+          t={t}
+          onOpenLink={onOpenLink}
+          onPrivateClick={onPrivateClick}
+        />
+      </div>
+    </GroupBox>
+  );
+}
+
 export default function ProjectsSection() {
   const t = useTranslations("HomePage.projects");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -125,9 +230,8 @@ export default function ProjectsSection() {
           </span>
         </WindowHeader>
 
-
         {/* Address Bar */}
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-[#dcdcdc] border-b border-[#808080]">
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-neutral-200 border-b border-neutral-400">
           <span className="text-xs text-neutral-800 font-bold shrink-0">{t("addressLabel")}</span>
           <Frame
             variant="field"
@@ -142,7 +246,7 @@ export default function ProjectsSection() {
           <div className="flex flex-col gap-4">
             {/* Header info */}
             <div>
-              <span className="text-xs font-bold text-[#000080] bg-blue-100 px-2 py-0.5 border border-blue-300">
+              <span className="text-xs font-bold text-blue-900 bg-blue-100 px-2 py-0.5 border border-blue-300">
                 {t("badge")}
               </span>
               <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 mt-2 mb-1">
@@ -156,62 +260,13 @@ export default function ProjectsSection() {
             {/* Projects List */}
             <div className="flex flex-col gap-6">
               {PROJECTS_DATA.map((proj) => (
-                <GroupBox
+                <HomeProjectCard
                   key={proj.key}
-                  className="project-card-item"
-                  label={`📁 ${t(proj.titleKey)}`}
-                  style={{ backgroundColor: "#fbfbfb" }}
-                >
-                  <div className="p-2 space-y-3">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="text-xs sm:text-sm font-bold text-[#000080]">
-                        {t(proj.taglineKey)}
-                      </span>
-                      {proj.isPrivate && (
-                        <span className="text-[11px] font-bold text-amber-800 bg-amber-100 border border-amber-300 px-2 py-0.5">
-                          🔒 {t("privateOrg")}
-                        </span>
-                      )}
-                    </div>
-
-                    <p className="text-xs sm:text-base text-neutral-800 leading-relaxed m-0">
-                      {t(proj.descKey)}
-                    </p>
-
-                    <Separator style={{ margin: "8px 0" }} />
-
-                    {/* Card Actions */}
-                    <div className="flex flex-wrap items-center justify-end gap-2 pt-1">
-                      {proj.liveUrl && (
-                        <Button
-                          primary
-                          onClick={() => handleOpenLink(proj.liveUrl)}
-                          style={{ fontWeight: "bold", fontSize: "11px" }}
-                        >
-                          🚀 {t("launchLive")}
-                        </Button>
-                      )}
-
-                      {proj.githubUrl && (
-                        <Button
-                          onClick={() => handleOpenLink(proj.githubUrl)}
-                          style={{ fontWeight: "bold", fontSize: "11px" }}
-                        >
-                          💻 {t("viewCode")}
-                        </Button>
-                      )}
-
-                      {proj.isPrivate && (
-                        <Button
-                          onClick={handlePrivateClick}
-                          style={{ fontSize: "11px", color: "#333" }}
-                        >
-                          🔒 {t("privateOrg")}
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </GroupBox>
+                  proj={proj}
+                  t={t}
+                  onOpenLink={handleOpenLink}
+                  onPrivateClick={handlePrivateClick}
+                />
               ))}
             </div>
           </div>

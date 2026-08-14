@@ -71,6 +71,131 @@ function computeMouseLook(
   object.quaternion.copy(scratch.savedQ);
 }
 
+function initRestQuaternions(
+  object: THREE.Object3D,
+  restQ: React.MutableRefObject<THREE.Quaternion | null>,
+  targetQ: THREE.Quaternion,
+  currentQ: THREE.Quaternion,
+): void {
+  if (!restQ.current) {
+    restQ.current = object.quaternion.clone();
+    targetQ.copy(restQ.current);
+    currentQ.copy(restQ.current);
+  }
+}
+
+function updateElementRects(
+  domElement: HTMLElement | null,
+  canvasRectRef: React.MutableRefObject<DOMRect | null>,
+  containerRectRef: React.MutableRefObject<DOMRect | null>,
+): void {
+  if (domElement) {
+    canvasRectRef.current = domElement.getBoundingClientRect();
+    containerRectRef.current = canvasRectRef.current;
+  }
+}
+
+interface MouseLookParams {
+  enabled: boolean;
+  currentObject: THREE.Object3D | null;
+  camera: THREE.Camera;
+  scratch: ScratchObjects;
+  targetQ: THREE.Quaternion;
+  currentQ: THREE.Quaternion;
+  restQ: React.MutableRefObject<THREE.Quaternion | null>;
+  containerRectRef: React.MutableRefObject<DOMRect | null>;
+  canvasRectRef: React.MutableRefObject<DOMRect | null>;
+  updateRects: () => void;
+}
+
+function ensureRectsPopulated(
+  container: DOMRect | null,
+  canvas: DOMRect | null,
+  updateRects: () => void,
+): void {
+  if (!container || !canvas) {
+    updateRects();
+  }
+}
+
+function getValidElementRects(
+  containerRectRef: React.MutableRefObject<DOMRect | null>,
+  canvasRectRef: React.MutableRefObject<DOMRect | null>,
+  updateRects: () => void,
+): { container: DOMRect; canvas: DOMRect } | null {
+  ensureRectsPopulated(
+    containerRectRef.current,
+    canvasRectRef.current,
+    updateRects,
+  );
+  const container = containerRectRef.current;
+  const canvas = canvasRectRef.current;
+  if (!container) return null;
+  if (!canvas) return null;
+  return { container, canvas };
+}
+
+function canProcessMouseLook(
+  enabled: boolean,
+  object: THREE.Object3D | null,
+): object is THREE.Object3D {
+  return enabled && object !== null;
+}
+
+function resetToRestQuaternion(
+  restQ: React.MutableRefObject<THREE.Quaternion | null>,
+  targetQ: THREE.Quaternion,
+): void {
+  if (restQ.current) {
+    targetQ.copy(restQ.current);
+  }
+}
+
+function processMouseLook(
+  clientX: number,
+  clientY: number,
+  params: MouseLookParams,
+): void {
+  const {
+    enabled,
+    currentObject,
+    camera,
+    scratch,
+    targetQ,
+    currentQ,
+    restQ,
+    containerRectRef,
+    canvasRectRef,
+    updateRects,
+  } = params;
+
+  if (!canProcessMouseLook(enabled, currentObject)) return;
+
+  initRestQuaternions(currentObject, restQ, targetQ, currentQ);
+
+  const rects = getValidElementRects(
+    containerRectRef,
+    canvasRectRef,
+    updateRects,
+  );
+  if (!rects) return;
+
+  if (!isInsideRect(clientX, clientY, rects.container)) {
+    resetToRestQuaternion(restQ, targetQ);
+    return;
+  }
+
+  computeMouseLook(
+    currentObject,
+    camera,
+    clientX,
+    clientY,
+    rects.canvas,
+    scratch,
+    targetQ,
+  );
+}
+
 export function useCrtMouseLook(
   targetRef: RefObject<THREE.Object3D | null>,
   enabled: boolean = true,
@@ -95,45 +220,24 @@ export function useCrtMouseLook(
 
   useEffect(() => {
     const currentObject = targetRef.current;
-    const updateRects = () => {
-      if (gl.domElement) {
-        canvasRectRef.current = gl.domElement.getBoundingClientRect();
-        containerRectRef.current = canvasRectRef.current;
-      }
-    };
-
+    const updateRects = () => updateElementRects(gl.domElement, canvasRectRef, containerRectRef);
     updateRects();
 
+    const mouseLookParams: MouseLookParams = {
+      enabled,
+      currentObject,
+      camera,
+      scratch,
+      targetQ,
+      currentQ,
+      restQ,
+      containerRectRef,
+      canvasRectRef,
+      updateRects,
+    };
+
     const updateMouseLook = (clientX: number, clientY: number) => {
-      if (!enabled) return;
-      const object = currentObject;
-      if (!object) return;
-
-      if (!restQ.current) {
-        restQ.current = object.quaternion.clone();
-        targetQ.copy(restQ.current);
-        currentQ.copy(restQ.current);
-      }
-
-      if (!containerRectRef.current || !canvasRectRef.current) {
-        updateRects();
-        if (!containerRectRef.current || !canvasRectRef.current) return;
-      }
-
-      if (!isInsideRect(clientX, clientY, containerRectRef.current)) {
-        if (restQ.current) targetQ.copy(restQ.current);
-        return;
-      }
-
-      computeMouseLook(
-        object,
-        camera,
-        clientX,
-        clientY,
-        canvasRectRef.current,
-        scratch,
-        targetQ,
-      );
+      processMouseLook(clientX, clientY, mouseLookParams);
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -152,13 +256,15 @@ export function useCrtMouseLook(
     window.addEventListener("resize", updateRects, { passive: true });
     document.documentElement.addEventListener("mouseleave", handleMouseLeave);
 
+    const restRef = restQ;
+
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", updateRects);
       document.documentElement.removeEventListener("mouseleave", handleMouseLeave);
 
-      if (restQ.current && currentObject) {
-        currentObject.quaternion.copy(restQ.current);
+      if (restRef.current && currentObject) {
+        currentObject.quaternion.copy(restRef.current);
       }
     };
   }, [targetRef, camera, gl, enabled, scratch, targetQ, currentQ]);
@@ -167,11 +273,7 @@ export function useCrtMouseLook(
     const object = targetRef.current;
     if (!object) return;
 
-    if (!restQ.current) {
-      restQ.current = object.quaternion.clone();
-      targetQ.copy(restQ.current);
-      currentQ.copy(restQ.current);
-    }
+    initRestQuaternions(object, restQ, targetQ, currentQ);
 
     if (!enabled && restQ.current) {
       targetQ.copy(restQ.current);

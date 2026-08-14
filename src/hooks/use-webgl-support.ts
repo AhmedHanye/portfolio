@@ -4,24 +4,29 @@ import { useSyncExternalStore } from "react";
 
 let cachedSupport: boolean | null = null;
 
+function probeGlContext(canvas: HTMLCanvasElement): RenderingContext | null {
+  return (
+    canvas.getContext("webgl2") ||
+    canvas.getContext("webgl") ||
+    canvas.getContext("experimental-webgl")
+  );
+}
+
+function releaseGlContext(gl: RenderingContext | null): void {
+  if (gl && "getExtension" in gl) {
+    const loseContext = (gl as WebGLRenderingContext).getExtension("WEBGL_lose_context");
+    loseContext?.loseContext();
+  }
+}
+
 function checkIsWebGLSupported(): boolean {
   if (typeof window === "undefined") return true;
   if (cachedSupport !== null) return cachedSupport;
 
   try {
     const canvas = document.createElement("canvas");
-    const gl =
-      canvas.getContext("webgl2") ||
-      canvas.getContext("webgl") ||
-      canvas.getContext("experimental-webgl");
-
-    if (gl && "getExtension" in gl) {
-      const loseContext = (gl as WebGLRenderingContext).getExtension("WEBGL_lose_context");
-      if (loseContext) {
-        loseContext.loseContext();
-      }
-    }
-
+    const gl = probeGlContext(canvas);
+    releaseGlContext(gl);
     cachedSupport = Boolean(gl);
     return cachedSupport;
   } catch {

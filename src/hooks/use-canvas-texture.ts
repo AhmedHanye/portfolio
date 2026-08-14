@@ -8,13 +8,47 @@ interface CanvasTextureOptions {
   height?: number;
 }
 
+function createCanvasAndTexture(
+  width: number,
+  height: number,
+): { canvas: HTMLCanvasElement; texture: THREE.CanvasTexture } {
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+
+  const texture = new THREE.CanvasTexture(canvas);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (texture as any).colorSpace = THREE.SRGBColorSpace ?? "srgb";
+  return { canvas, texture };
+}
+
+function startCanvasRenderLoop(
+  ctx: CanvasRenderingContext2D,
+  texture: THREE.CanvasTexture,
+  drawRef: React.MutableRefObject<DrawFn>,
+): () => void {
+  let animationFrameId: number;
+  let frame = 0;
+
+  const render = () => {
+    drawRef.current(ctx, frame);
+    texture.needsUpdate = true;
+    frame += 1;
+    animationFrameId = requestAnimationFrame(render);
+  };
+
+  render();
+  return () => cancelAnimationFrame(animationFrameId);
+}
+
+// fallow-ignore-next-line complexity
 export function useCanvasTexture(
   draw: DrawFn,
   onTextureReady: (texture: THREE.CanvasTexture) => void,
   options?: CanvasTextureOptions,
 ): void {
-  const width = options?.width ?? 512;
-  const height = options?.height ?? 512;
+  const width = options?.width || 512;
+  const height = options?.height || 512;
 
   const drawRef = useRef<DrawFn>(draw);
   const onTextureReadyRef = useRef<(texture: THREE.CanvasTexture) => void>(onTextureReady);
@@ -25,36 +59,16 @@ export function useCanvasTexture(
   });
 
   useEffect(() => {
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-
-    const texture = new THREE.CanvasTexture(canvas);
-    // colorSpace was added in Three.js r152; @types/three is pinned at 0.151.0
-    // so we cast. Upgrade @types/three when upgrading three itself.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (texture as any).colorSpace = THREE.SRGBColorSpace ?? "srgb";
-
+    const { canvas, texture } = createCanvasAndTexture(width, height);
     onTextureReadyRef.current(texture);
 
-    // Cache the 2D context once outside the rAF loop to avoid repeated lookups.
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) return () => texture.dispose();
 
-    let animationFrameId: number;
-    let frame = 0;
-
-    const render = () => {
-      drawRef.current(ctx, frame);
-      texture.needsUpdate = true;
-      frame += 1;
-      animationFrameId = requestAnimationFrame(render);
-    };
-
-    render();
+    const stopLoop = startCanvasRenderLoop(ctx, texture, drawRef);
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      stopLoop();
       texture.dispose();
     };
   }, [width, height]);

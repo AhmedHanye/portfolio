@@ -9,32 +9,21 @@ interface VideoTextureOptions {
   height?: string;
 }
 
-function createConfiguredVideo(
-  src: string,
-  options?: VideoTextureOptions,
-): HTMLVideoElement {
-  const video = document.createElement("video");
-  video.src = src;
-
+function applyVideoAttributes(video: HTMLVideoElement, options: VideoTextureOptions = {}): void {
   const {
     muted = true,
     loop = true,
     autoplay = true,
     width = "256px",
     height = "256px",
-  } = options || {};
+  } = options;
 
   video.muted = muted;
+  video.defaultMuted = muted;
   video.loop = loop;
   video.playsInline = true;
   video.autoplay = autoplay;
   video.crossOrigin = "anonymous";
-
-  if (muted) video.setAttribute("muted", "");
-  if (loop) video.setAttribute("loop", "");
-  if (autoplay) video.setAttribute("autoplay", "");
-  video.setAttribute("playsinline", "");
-  video.setAttribute("crossorigin", "anonymous");
 
   Object.assign(video.style, {
     position: "absolute",
@@ -45,7 +34,15 @@ function createConfiguredVideo(
     opacity: "0",
     pointerEvents: "none",
   });
+}
 
+function createConfiguredVideo(
+  src: string,
+  options?: VideoTextureOptions,
+): HTMLVideoElement {
+  const video = document.createElement("video");
+  video.src = src;
+  applyVideoAttributes(video, options);
   return video;
 }
 
@@ -59,17 +56,43 @@ function createVideoTexture(video: HTMLVideoElement): THREE.VideoTexture {
   return texture;
 }
 
+const DEFAULT_OPTIONS: Required<VideoTextureOptions> = {
+  loop: true,
+  muted: true,
+  autoplay: true,
+  width: "256px",
+  height: "256px",
+};
+
+function setupVideoAutoplay(video: HTMLVideoElement, src: string): () => void {
+  const handlePlay = () => {
+    video.play().catch((err) => {
+      if (err.name !== "AbortError") {
+        console.warn(`[useVideoTexture] Autoplay blocked for ${src}:`, err);
+      }
+    });
+  };
+
+  handlePlay();
+  window.addEventListener("click", handlePlay, { once: true });
+  return () => window.removeEventListener("click", handlePlay);
+}
+
+function cleanupVideo(video: HTMLVideoElement, texture: THREE.VideoTexture): void {
+  video.pause();
+  video.src = "";
+  video.load();
+  if (video.parentNode) {
+    video.parentNode.removeChild(video);
+  }
+  texture.dispose();
+}
+
 export function useVideoTexture(
   src: string,
   onTextureReady: (texture: THREE.VideoTexture) => void,
-  options?: VideoTextureOptions,
+  options: VideoTextureOptions = DEFAULT_OPTIONS,
 ): void {
-  const loop = options?.loop ?? true;
-  const muted = options?.muted ?? true;
-  const autoplay = options?.autoplay ?? true;
-  const width = options?.width ?? "256px";
-  const height = options?.height ?? "256px";
-
   const onTextureReadyRef = useRef<(texture: THREE.VideoTexture) => void>(onTextureReady);
 
   useEffect(() => {
@@ -83,32 +106,12 @@ export function useVideoTexture(
     const texture = createVideoTexture(video);
     onTextureReadyRef.current(texture);
 
-    const handlePlay = () => {
-      video.play().catch((err) => {
-        if (err.name !== "AbortError") {
-          console.warn(
-            `[useVideoTexture] Autoplay blocked for ${src}, waiting for user interaction:`,
-            err,
-          );
-        }
-      });
-    };
-
-    if (autoplay) {
-      handlePlay();
-      window.addEventListener("click", handlePlay, { once: true });
-    }
+    const cleanupAutoplay = options.autoplay !== false ? setupVideoAutoplay(video, src) : undefined;
 
     return () => {
-      window.removeEventListener("click", handlePlay);
-      video.pause();
-      video.src = "";
-      video.load();
-      if (video.parentNode) {
-        video.parentNode.removeChild(video);
-      }
-      texture.dispose();
+      cleanupAutoplay?.();
+      cleanupVideo(video, texture);
     };
-  }, [src, loop, muted, autoplay, width, height, options]);
+  }, [src, options]);
 }
 

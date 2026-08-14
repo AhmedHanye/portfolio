@@ -20,37 +20,31 @@ const DEFAULT_VIEWPORT: ViewportInfo = {
   height: 1080,
 };
 
-let currentSnapshot: ViewportInfo = DEFAULT_VIEWPORT;
+function computeViewport(width: number, height: number): ViewportInfo {
+  return {
+    width,
+    height,
+    isCompact: width < 1024 || height < 680,
+    isShortScreen: height < 520,
+    isMobile: width < 768,
+    isPortrait: height > width,
+  };
+}
+
+function areViewportsEqual(a: ViewportInfo, b: ViewportInfo): boolean {
+  return a.width === b.width && a.height === b.height;
+}
+
+let cachedSnapshot: ViewportInfo = DEFAULT_VIEWPORT;
 
 function getSnapshot(): ViewportInfo {
   if (typeof window === "undefined") return DEFAULT_VIEWPORT;
 
-  const width = window.innerWidth;
-  const height = window.innerHeight;
-  const isCompact = width < 1024 || height < 680;
-  const isShortScreen = height < 520;
-  const isMobile = width < 768;
-  const isPortrait = height > width;
-
-  if (
-    currentSnapshot.width !== width ||
-    currentSnapshot.height !== height ||
-    currentSnapshot.isCompact !== isCompact ||
-    currentSnapshot.isShortScreen !== isShortScreen ||
-    currentSnapshot.isMobile !== isMobile ||
-    currentSnapshot.isPortrait !== isPortrait
-  ) {
-    currentSnapshot = {
-      isCompact,
-      isShortScreen,
-      isMobile,
-      isPortrait,
-      width,
-      height,
-    };
+  const next = computeViewport(window.innerWidth, window.innerHeight);
+  if (!areViewportsEqual(cachedSnapshot, next)) {
+    cachedSnapshot = next;
   }
-
-  return currentSnapshot;
+  return cachedSnapshot;
 }
 
 function subscribe(callback: () => void) {

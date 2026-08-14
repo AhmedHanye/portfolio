@@ -49,117 +49,100 @@ const INITIAL_STATE: WindowManagerState = {
   topZIndex: 10,
 };
 
+function findTopmostWindowId(
+  windows: WindowsState,
+  excludeId?: WindowId,
+): WindowId | null {
+  const openIds = (Object.keys(windows) as WindowId[]).filter(
+    (key) => windows[key].isOpen && !windows[key].isMinimized && key !== excludeId,
+  );
+  if (openIds.length === 0) return null;
+  openIds.sort((a, b) => windows[b].zIndex - windows[a].zIndex);
+  return openIds[0];
+}
+
+function reduceOpenWindow(state: WindowManagerState, id: WindowId): WindowManagerState {
+  const nextZ = state.topZIndex + 1;
+  return {
+    topZIndex: nextZ,
+    activeWindowId: id,
+    windows: {
+      ...state.windows,
+      [id]: { isOpen: true, isMinimized: false, zIndex: nextZ },
+    },
+  };
+}
+
+function reduceFocusWindow(state: WindowManagerState, id: WindowId): WindowManagerState {
+  const nextZ = state.topZIndex + 1;
+  return {
+    topZIndex: nextZ,
+    activeWindowId: id,
+    windows: {
+      ...state.windows,
+      [id]: {
+        ...state.windows[id],
+        isMinimized: false,
+        zIndex: nextZ,
+      },
+    },
+  };
+}
+
+function reduceCloseWindow(state: WindowManagerState, id: WindowId): WindowManagerState {
+  const updatedWindows = {
+    ...state.windows,
+    [id]: { ...state.windows[id], isOpen: false },
+  };
+  return {
+    ...state,
+    windows: updatedWindows,
+    activeWindowId: findTopmostWindowId(updatedWindows, id),
+  };
+}
+
+function reduceToggleMinimize(state: WindowManagerState, id: WindowId): WindowManagerState {
+  const target = state.windows[id];
+  if (target.isMinimized) {
+    return reduceFocusWindow(state, id);
+  }
+
+  if (state.activeWindowId === id) {
+    const updatedWindows = {
+      ...state.windows,
+      [id]: { ...target, isMinimized: true },
+    };
+    return {
+      ...state,
+      windows: updatedWindows,
+      activeWindowId: findTopmostWindowId(updatedWindows),
+    };
+  }
+
+  return reduceFocusWindow(state, id);
+}
+
+const ACTION_REDUCERS: {
+  [K in WindowAction["type"]]: (
+    state: WindowManagerState,
+    action: Extract<WindowAction, { type: K }>,
+  ) => WindowManagerState;
+} = {
+  OPEN_WINDOW: (state, action) => reduceOpenWindow(state, action.id),
+  FOCUS_WINDOW: (state, action) => reduceFocusWindow(state, action.id),
+  CLOSE_WINDOW: (state, action) => reduceCloseWindow(state, action.id),
+  TOGGLE_MINIMIZE: (state, action) => reduceToggleMinimize(state, action.id),
+};
+
 function windowManagerReducer(
   state: WindowManagerState,
   action: WindowAction,
 ): WindowManagerState {
-  switch (action.type) {
-    case "OPEN_WINDOW": {
-      const nextZ = state.topZIndex + 1;
-      return {
-        topZIndex: nextZ,
-        activeWindowId: action.id,
-        windows: {
-          ...state.windows,
-          [action.id]: { isOpen: true, isMinimized: false, zIndex: nextZ },
-        },
-      };
-    }
-
-    case "FOCUS_WINDOW": {
-      const nextZ = state.topZIndex + 1;
-      return {
-        topZIndex: nextZ,
-        activeWindowId: action.id,
-        windows: {
-          ...state.windows,
-          [action.id]: {
-            ...state.windows[action.id],
-            isMinimized: false,
-            zIndex: nextZ,
-          },
-        },
-      };
-    }
-
-    case "CLOSE_WINDOW": {
-      const updatedWindows = {
-        ...state.windows,
-        [action.id]: { ...state.windows[action.id], isOpen: false },
-      };
-
-      const openIds = (Object.keys(updatedWindows) as WindowId[]).filter(
-        (key) =>
-          updatedWindows[key].isOpen &&
-          !updatedWindows[key].isMinimized &&
-          key !== action.id,
-      );
-
-      let nextActive: WindowId | null = null;
-      if (openIds.length > 0) {
-        openIds.sort((a, b) => updatedWindows[b].zIndex - updatedWindows[a].zIndex);
-        nextActive = openIds[0];
-      }
-
-      return {
-        ...state,
-        windows: updatedWindows,
-        activeWindowId: nextActive,
-      };
-    }
-
-    case "TOGGLE_MINIMIZE": {
-      const target = state.windows[action.id];
-      if (target.isMinimized) {
-        const nextZ = state.topZIndex + 1;
-        return {
-          topZIndex: nextZ,
-          activeWindowId: action.id,
-          windows: {
-            ...state.windows,
-            [action.id]: { ...target, isMinimized: false, zIndex: nextZ },
-          },
-        };
-      }
-
-      if (state.activeWindowId === action.id) {
-        const updatedWindows = {
-          ...state.windows,
-          [action.id]: { ...target, isMinimized: true },
-        };
-
-        const openIds = (Object.keys(updatedWindows) as WindowId[]).filter(
-          (key) => updatedWindows[key].isOpen && !updatedWindows[key].isMinimized,
-        );
-
-        let nextActive: WindowId | null = null;
-        if (openIds.length > 0) {
-          openIds.sort((a, b) => updatedWindows[b].zIndex - updatedWindows[a].zIndex);
-          nextActive = openIds[0];
-        }
-
-        return {
-          ...state,
-          windows: updatedWindows,
-          activeWindowId: nextActive,
-        };
-      }
-
-      // Open in background -> bring to front
-      const nextZ = state.topZIndex + 1;
-      return {
-        topZIndex: nextZ,
-        activeWindowId: action.id,
-        windows: {
-          ...state.windows,
-          [action.id]: { ...target, isMinimized: false, zIndex: nextZ },
-        },
-      };
-    }
-
-    default:
-      return state;
-  }
+  const handler = ACTION_REDUCERS[action.type] as (
+    state: WindowManagerState,
+    action: WindowAction,
+  ) => WindowManagerState;
+  return handler ? handler(state, action) : state;
 }
 
 export function useWindowManager(): WindowManager {

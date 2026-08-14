@@ -1,92 +1,294 @@
 {
+  "metadata": {
+    "title": "Ahmed Hanye | Full-Stack Software Engineer",
+    "description": "Full-Stack Software Engineer specializing in resilient local-first web applications, distributed data synchronization, and high-performance web systems.",
+    "ogTitle": "Ahmed Hanye — Full-Stack Software Engineer",
+    "ogDescription": "Explore featured full-stack engineering projects, local-first architectures, and high-performance web applications.",
+    "keywords": "Ahmed Hanye, Software Engineer, Full-Stack Engineer, React 19, Next.js, Django Ninja, Celery, PowerSync, TanStack DB, WebGL, 3D Web, Local-First, Retro OS, Windows 95 Portfolio, Frontend Engineer, Egypt Developer"
+  },
   "HomePage": {
-    "title": "Portfolio",
-    "description": "Welcome to my portfolio website.",
-    "deployNow": "Deploy Now",
-    "readDocs": "Documentation"
+    "nav": {
+      "brand": "Ahmed_OS",
+      "about": "About",
+      "projects": "Projects",
+      "skills": "Skills",
+      "contact": "Contact",
+      "launch3d": "Launch 3D Room",
+      "soundMute": "Mute Sound",
+      "soundUnmute": "Unmute Sound"
+    },
+    "hero": {
+      "systemBadge": "RETRO OS // PORTFOLIO EDITION",
+      "name": "Ahmed Hanye",
+      "role": "Software Engineer | Full-Stack Software Engineer",
+      "bioSummary": "Software Engineer specializing in resilient local-first web applications, distributed asynchronous systems, and high-performance user interfaces. Focused on sub-millisecond client reactivity, modular architecture (FSD v2.1), and scalable cloud-backed SaaS platforms.",
+      "educationBadge": "Arab Open University (Cairo) — Computer Science",
+      "gradDate": "Graduated: July 2026 (Honors)",
+      "location": "Damietta, Egypt (Open to Remote & Relocation)",
+      "status": "Available for Full-Time Roles",
+      "btnLaunch3d": "Enter 3D Interactive Room (Ahmed_OS)",
+      "btnProjects": "Explore Projects (C:\\Projects)",
+      "btnContact": "Get in Touch",
+      "btnResume": "Resume / CV"
+    },
+    "gateway3d": {
+      "badge": "IMMERSIVE THREE.JS / SPLINE ENVIRONMENT",
+      "title": "Experience Ahmed_OS in Full 3D",
+      "description": "Step into an interactive 3D WebGL workstation room demonstrating advanced real-time rendering, custom GLSL CRT shaders, interactive terminal, and a fully functional Windows 95 desktop simulation with zero-leak WebGL lifecycle management.",
+      "featureRoom": "3D WebGL Workstation",
+      "featureDraggable": "Multi-Window Win95 OS",
+      "featureTerminal": "Interactive Retro Shell",
+      "featureAudio": "Custom Retro Audio Synthesizer",
+      "btnLaunch": "⚡ BOOT AHMED_OS 3D WORKSPACE ⚡",
+      "terminalHint": "Click below to initialize WebGL shaders & load the virtual 3D office.",
+      "groupOverview": "🎮 Interactive 3D Mode Overview"
+    },
+    "about": {
+      "windowTitle": "about.txt - Notepad",
+      "badge": "SYSTEM PROFILE // BIOGRAPHY",
+      "heading": "Engineering Philosophy & Background",
+      "bio1": "I am a Software Engineer focused on architecting resilient, high-performance web systems. My work centers on the intersection of reactive client-side state, local-first offline persistence, and robust, asynchronous distributed backends.",
+      "bio2": "Whether designing production SaaS platforms with offline-first data synchronization (PowerSync + TanStack DB) or building decoupled headless APIs (Django Ninja + Celery), I engineer software with strict modularity (FSD v2.1), sub-millisecond query performance, and cloud best practices. I am actively seeking Full-Time Software Engineering / Full-Stack Engineering roles.",
+      "educationTitle": "Academic Background",
+      "university": "Arab Open University (AOU - Cairo, Egypt)",
+      "major": "B.Sc. in Computer Science",
+      "graduated": "Graduation: July 2026 (Excellent with Honors)",
+      "location": "Location: Damietta, Egypt (Open to Remote & Relocation)",
+      "careerTitle": "What I Focus On",
+      "focusItem1": "Local-First & Offline-First Persistence & Reactivity",
+      "focusItem2": "Modular Scalability & Feature-Sliced Architecture (FSD v2.1)",
+      "focusItem3": "Decoupled Headless APIs & Asynchronous Queues (AWS / Celery)",
+      "focusItem4": "Codebase Health, Sub-Second Toolchains & Quality Gates",
+      "menuFile": "File",
+      "menuEdit": "Edit",
+      "menuSearch": "Search",
+      "menuHelp": "Help",
+      "helpAlert": "about.txt - Ahmed Hanye Portfolio"
+    },
+    "projects": {
+      "windowTitle": "C:\\Projects - Windows Explorer",
+      "badge": "SELECTED WORK // PRODUCTION & RESEARCH",
+      "heading": "Featured Engineering Projects",
+      "subheading": "Production SaaS architectures, distributed system design, and high-framerate interactive web experiences.",
+      "addressLabel": "Address:",
+      "launchLive": "Launch Live Demo",
+      "viewCode": "Source Code",
+      "privateOrg": "Private Organization Repo",
+      "privateRepoAlert": "InterviewFlow is a proprietary software company repository. Source code is private.",
+      "menuFile": "File",
+      "menuEdit": "Edit",
+      "menuView": "View",
+      "menuHelp": "Help",
+      "items": {
+        "saas": {
+          "title": "InterviewFlow",
+          "tagline": "High-Standard Enterprise Technical Hiring SaaS",
+          "desc": "A next-generation technical hiring platform engineered to conduct reliable, friction-free live technical evaluations. It empowers engineering teams to standardize coding assessments, eliminate interview disruption and session data loss, and automatically synthesize deep candidate performance scorecards to accelerate hiring decisions."
+        },
+        "proto": {
+          "title": "InterviewFlow (Graduation Prototype)",
+          "tagline": "Initial Architecture & Workflow Feasibility Sandbox",
+          "desc": "An exploratory real-time candidate evaluation sandbox developed as a graduation project. Provided live collaborative scoring rubrics and synchronized evaluation workflows, serving as the foundational prototype for the v2 production SaaS engine."
+        },
+        "awwwards": {
+          "title": "Interactive Motion Showcase",
+          "tagline": "High-Framerate Interactive Web Experience",
+          "desc": "A dynamic interactive web showcase demonstrating fluid scroll-driven storytelling, 60 FPS GSAP animation orchestration, and interactive polygon transformations built with React and Tailwind CSS."
+        }
+      }
+    },
+    "architecture": {
+      "windowTitle": "System Properties - Architecture & Engine",
+      "badge": "DEEP DIVE // CORE SYSTEMS",
+      "heading": "System Architecture & Technical Case Studies",
+      "tabs": {
+        "dualEngine": "Local-First Dual Engine",
+        "fsd": "Feature-Sliced Design (FSD)",
+        "backend": "Django Ninja + Celery",
+        "performance": "Performance & DX"
+      },
+      "dualEngineContent": {
+        "title": "Dual-Engine Local-First Persistence & Reactivity (InterviewFlow Engine)",
+        "summary": "Combining the raw speed of in-memory reactive state with the bulletproof persistence of embedded SQLite.",
+        "p1": "TanStack DB provides sub-millisecond (< 1ms) in-memory queries and optimistic draft mutations directly in the client layer, ensuring zero UI evaluation lag during interviews.",
+        "p2": "PowerSync manages background WAL (Write-Ahead Logging) streaming and client-side wa-sqlite (WebAssembly SQLite) storage, ensuring zero session data loss during complete network disconnects."
+      },
+      "fsdContent": {
+        "title": "Feature-Sliced Design (FSD v2.1) Architecture",
+        "summary": "Strict layer separation that scales codebases without spaghetti coupling.",
+        "p1": "Structured into App → Pages → Widgets → Features → Entities → Shared layers. High layers may only import from lower layers.",
+        "p2": "Automated layer boundary verification using Steiger linter, guaranteeing that business logic remains decoupled and easily testable."
+      },
+      "backendContent": {
+        "title": "Decoupled Typed REST + Multi-Lane Async Workers (AWS Infrastructure)",
+        "summary": "Fast, type-safe API endpoints powered by Django Ninja and distributed background tasks.",
+        "p1": "Django 6 Ninja provides end-to-end type safety, auto-generated OpenAPI documentation, and headless cookie session authentication with strict CSRF protection.",
+        "p2": "Celery multi-lane worker pipelines with Redis message brokers manage transactional email dispatching (AWS SES), PDF assessment synthesis, and async webhook sync."
+      },
+      "perfContent": {
+        "title": "Engineering Standards, Benchmarks & DX Tooling",
+        "summary": "Blazing fast toolchains, sub-second builds, and deep static codebase intelligence.",
+        "p1": "Modern DX powered by Bun (package manager & test runner), uv & Ruff (Python speed toolchains), and automated lint gates.",
+        "p2": "Code quality enforced with React Doctor (React 19 compiler compliance), Fallow (dead code & duplication analysis), and Playwright E2E suites."
+      }
+    },
+    "skillsSection": {
+      "windowTitle": "Skills Explorer",
+      "badge": "CAPABILITIES // TECH STACK",
+      "heading": "Technical Skills & Competencies",
+      "languages": "Languages & Core",
+      "frameworks": "Frameworks & Libraries",
+      "tools": "Databases, Tools & Cloud",
+      "specialties": "Key Engineering Specialties",
+      "menuFile": "File",
+      "menuView": "View",
+      "menuHelp": "Help",
+      "specialtyOfflineTitle": "Offline-First & Local-First Architectures",
+      "specialtyOfflineDesc": "Dual-engine setup pairing PowerSync (WASM SQLite persistence & background WAL sync) with TanStack DB (< 1ms in-memory reactivity).",
+      "specialtyFsdTitle": "Feature-Sliced Design (FSD v2.1)",
+      "specialtyFsdDesc": "Pragmatic Pages-First modular architecture with automated layer boundary verification via Steiger.",
+      "specialtyHeadlessTitle": "Headless Backend & Decoupled APIs",
+      "specialtyHeadlessDesc": "Django Ninja typed OpenAPI REST paired with headless cookie session auth and cross-origin CSRF protection.",
+      "specialtyToolingTitle": "Modern DX & Codebase Intelligence",
+      "specialtyToolingDesc": "Sub-second toolchains (Bun, uv, Ruff) paired with deep codebase analysis (Fallow, React Doctor).",
+      "specialtyTestingTitle": "Comprehensive Full-Stack Testing",
+      "specialtyTestingDesc": "Storybook 10 interaction play tests, Playwright E2E suites, and high-speed Vitest / Pytest workflows."
+    },
+    "contact": {
+      "windowTitle": "Contact.exe - Direct Messaging",
+      "badge": "GET IN TOUCH // HIRING",
+      "heading": "Let's Build Something Exceptional Together",
+      "subheading": "Currently open for Full-Time Software Engineering, Full-Stack, or Frontend roles.",
+      "emailLabel": "Email Address:",
+      "copyEmail": "Copy Email",
+      "copiedToast": "✓ Email address copied to clipboard!",
+      "sendEmail": "Send Direct Email",
+      "onlineProfiles": "Online Profiles",
+      "github": "View GitHub Profile",
+      "linkedin": "Connect on LinkedIn",
+      "responseSla": "Response SLA & Availability",
+      "activelyInterviewing": "Actively Interviewing",
+      "responseNote": "I usually reply within 24 hours.",
+      "location": "Location: Damietta, Egypt (Open to Remote Worldwide & Relocation)"
+    },
+    "footer": {
+      "start": "Start",
+      "status": "System Status: Online (Ready)",
+      "cairoTime": "Cairo Time",
+      "visitors": "Visitor ID: #4095",
+      "copyright": "© 2026 Ahmed Hanye. Built with Next.js 16, React 19, React95 & GSAP."
+    }
   },
   "OS": {
     "desktop": {
       "myComputer": "My Computer",
       "cDrive": "Local Disk (C:)",
-      "aboutMe": "About Me",
+      "aboutMe": "about.txt",
       "mySkills": "My Skills",
-      "myProjects": "My Projects"
+      "myProjects": "My Projects",
+      "webPortfolio": "Web Portfolio"
     },
     "startMenu": {
-      "aboutMe": "About Me",
-      "skills": "Skills",
-      "projects": "Projects",
+      "aboutMe": "About Me (about.txt)",
+      "skills": "Skills & Tech Stack",
+      "projects": "My Projects",
+      "systemProperties": "System Properties",
       "systemStatus": "System Status",
+      "cDrive": "Local Disk (C:)",
+      "exitToPortfolio": "Return to Portfolio (Home)",
       "shutdown": "Shut Down...",
-      "shutdownAlert": "Error 403: System shutdown is disabled. Scroll up to return.",
+      "shutdownAlert": "System shutdown initiated.",
       "language": "العربية (Arabic)"
     },
     "taskbar": {
       "start": "Start",
+      "about": "about.txt - Notepad",
+      "skills": "Skills Explorer",
+      "projects": "C:\\Projects",
+      "system": "System Properties",
       "cDrive": "Local Disk (C:)",
       "explorer": "Windows Explorer",
       "volume": "Volume"
     },
-    "systemWindow": {
-      "file": "File",
-      "view": "View",
-      "help": "Help",
-      "helpAlert": "Ahmed_OS v2.6\nCreated by Ahmed Hanye using React95 & Three.js",
-      "scrollWarning": "SCROLL UP TO RETURN TO WORKSPACE"
+    "systemProperties": {
+      "title": "System Properties",
+      "tabGeneral": "General",
+      "tabStack": "Architecture",
+      "tabPerformance": "Performance",
+      "systemLabel": "System:",
+      "systemName": "Ahmed_OS (Portfolio Edition)",
+      "systemVersion": "Portfolio Edition (2026)",
+      "registeredLabel": "Registered to:",
+      "registeredUser": "Ahmed Hanye",
+      "registeredOrg": "Software Engineer | Full-Stack Software Engineer",
+      "computerLabel": "Computer Stack:",
+      "computerSpecs": "Next.js 16 + React 19 (FSD v2.1)\nLocal-First Dual Engine (PowerSync + TanStack DB)\nDjango 6 + Ninja REST / Celery Multi-Lane Pipeline (AWS)",
+      "perfTitle": "Performance & Diagnostics:",
+      "perf60fps": "• Graphics Engine: 60 FPS GSAP + Three.js Canvas",
+      "perfMemory": "• Memory Management: Zero-leak WebGL lifecycle",
+      "perfOffline": "• Offline Sync: Sub-millisecond (< 1ms) TanStack DB reactivity + SQLite sync",
+      "perfCompiler": "• React 19 Compiler: Optimized zero-cost memoization",
+      "btnOk": "OK",
+      "btnCancel": "Cancel"
     },
-    "diagnostics": {
-      "title": "System Properties & Diagnostics",
-      "deviceSpecs": "Device Specifications:",
-      "os": "⚙️ OS: Ahmed_OS Version 2.6 (AOU)",
-      "cpu": "⚙️ CPU: Intel Core i9-14900K @ 5.8 GHz",
-      "ram": "⚙️ RAM: 64.0 GB DDR5 RAM",
-      "graphics": "⚙️ Graphics: NVIDIA RTX 4090 / SVGA 32-Bit",
-      "direct3d": "⚙️ Direct3D: WebGL 2.0 / R3F Canvas",
-      "logKernel": "Initialising Ahmed_OS kernel...",
-      "logDjango": "Connecting Django Ninja endpoint...",
-      "logPowerSync": "Syncing PowerSync SQLite database...",
-      "logNextReact": "Loading Next.js 16 + React 19 modules...",
-      "logCelery": "Initiating Celery workers & Redis broker...",
-      "logFsd": "FSD structure compiled successfully.",
-      "logReady": "SYSTEM STATE: READY FOR DEPLOYMENT.",
-      "calibration": "Asset Calibration Engine"
+    "notepad": {
+      "title": "about.txt - Notepad",
+      "file": "File",
+      "edit": "Edit",
+      "search": "Search",
+      "help": "Help",
+      "helpAlert": "about.txt - Notepad v1.0\nCreated for Ahmed Hanye's interactive portfolio."
     },
     "aboutMe": {
-      "title": "Ahmed Hanye Hossny",
-      "role": "Software Engineer",
-      "bio1": "Hey there! I'm Ahmed, a Software Engineer and Computer Science graduate specializing in building high-performance, local-first web applications. I bridge the gap between pixel-perfect frontends and robust backends, working deeply with React 19, Next.js, and Django Ninja.",
-      "bio2": "With hands-on industry experience as a front-end dev and a couple of live SaaS side-projects under my belt, I'm currently looking for Full-Time Frontend or Full-Stack Engineering roles where I can help scale cutting-edge web apps.",
-      "education": "Education: Arab Open University",
-      "major": "Major: Computer Science (Graduated: June 2026)",
-      "location": "Location: Egypt",
+      "title": "Ahmed Hanye",
+      "role": "Software Engineer | Full-Stack Software Engineer",
+      "bio1": "Hey there! I'm Ahmed, a Software Engineer focused on designing resilient, local-first web applications and scalable decoupled cloud architectures. I build software systems with meticulous attention to performance, reliability, and engineering rigor.",
+      "bio2": "Currently engineering InterviewFlow—an upcoming enterprise technical hiring platform designed to streamline live coding assessments and candidate evaluation workflows—alongside prior frontend industry experience, I am seeking Full-Time Software Engineering / Full-Stack roles to build robust, scalable web products.",
+      "education": "Education: Arab Open University (Cairo)",
+      "major": "Major: Computer Science (Graduated: July 2026)",
+      "location": "Location: Damietta, Egypt (Open to Remote & Relocation)",
       "github": "GitHub",
       "linkedin": "LinkedIn",
       "emailMe": "Email Me"
     },
     "skills": {
-      "title": "Technical Skills & Expertise:",
+      "title": "Skills & Technologies",
       "languages": "Languages",
       "frameworks": "Frameworks & Libraries",
       "tools": "Developer Tools & Databases",
       "interests": "Areas of Interest",
-      "interestOffline": "Offline-First & Local-First Architectures: Local SQLite storage + background database synchronization (PowerSync).",
-      "interestFsd": "Feature-Sliced Design (FSD): Modular, clean, and scalable architecture pattern.",
-      "interestHeadless": "Headless & Microservices: Decoupled Next.js static exports paired with Django backend REST/Ninja APIs.",
-      "interestTooling": "Modern Web Tooling & DX: Fast dev pipelines using Bun, uv, Ruff, and Steiger.",
-      "interestTesting": "E2E & Automated Interaction Testing: Storybook play functions, Playwright, and Vitest."
+      "interestOffline": "Offline-First & Local-First Architectures: Dual-engine setup pairing PowerSync (WASM SQLite persistence & background WAL sync) with TanStack DB (< 1ms in-memory reactivity & draft mutators).",
+      "interestFsd": "Feature-Sliced Design (FSD v2.1): Pragmatic Pages-First modular architecture with automated layer boundary validation via Steiger.",
+      "interestHeadless": "Headless Backend & Decoupled APIs: Django Ninja typed OpenAPI REST paired with headless cookie session authentication and cross-origin CSRF protection.",
+      "interestTooling": "Modern DX & Codebase Intelligence: Blazing fast toolchains (Bun, uv, Ruff) paired with deep codebase analysis (Fallow, React Doctor, Steiger).",
+      "interestTesting": "Comprehensive Full-Stack Testing: Storybook 10 interaction play tests, Playwright E2E suites, and high-speed Vitest / Pytest workflows."
+    },
+    "systemWindow": {
+      "file": "File",
+      "view": "View",
+      "help": "Help",
+      "address": "Address:",
+      "close": "Close",
+      "items": "{count} object(s)",
+      "statusReady": "Ready"
     },
     "projects": {
-      "title": "Active Project Folders:",
+      "title": "C:\\Projects",
       "launchApp": "Launch App",
       "sourceCode": "Source Code",
+      "privateRepo": "Private Repository",
+      "privateRepoAlert": "InterviewFlow (Production SaaS) is a proprietary organization repository. Source code is private.",
+      "interviewFlowSaas": {
+        "title": "InterviewFlow",
+        "desc": "A next-generation technical hiring platform engineered to conduct reliable, friction-free live technical evaluations. It empowers engineering teams to standardize coding assessments, eliminate interview disruption and session data loss, and automatically synthesize deep candidate performance scorecards to accelerate hiring decisions."
+      },
       "interviewFlow": {
-        "title": "InterviewFlow (Graduation Project)",
-        "desc": "A platform for helping both interviewees and interviewers. Allows creation of structured interview pipelines with assessments, coding challenges, and real-time analytics to find the best talent faster. Completed full project implementation."
+        "title": "InterviewFlow (Graduation Prototype)",
+        "desc": "An exploratory real-time candidate evaluation sandbox developed as a graduation project. Provided live collaborative scoring rubrics and synchronized evaluation workflows, serving as the foundational prototype for the v2 production SaaS engine."
       },
       "awwwards": {
-        "title": "awwwards (Zentry Clone)",
-        "desc": "A high-performance React landing page application built with modern web technologies and best practices, replicating advanced animations and transitions of the Zentry landing page."
+        "title": "Interactive Motion Showcase",
+        "desc": "A dynamic interactive web showcase demonstrating fluid scroll-driven storytelling, 60 FPS GSAP animation orchestration, and interactive polygon transformations built with React and Tailwind CSS."
       }
     },
     "cDrive": {
@@ -101,8 +303,39 @@
     "explorer": {
       "title": "Windows Explorer",
       "projectsPath": "C:\\Projects:",
-      "readmeAlert": "README.TXT - Notepad\n\nAhmed Hanye Hossny - Software Engineer\nEgypt | ahmedhanyehossny@gmail.com\n-----------------------------------\n\nI am a Computer Science graduate (June 2026) specializing in high-performance, local-first web applications using React 19, Next.js, and Django Ninja.\n\nCheck the tabs in the main window for full details on my bio, technical skills, and projects!",
-      "splineAlert": "Shortcut: WebGL_Workspace_3D - double click folder on desktop or use System Window."
+      "readmeAlert": "README.TXT - Notepad\n\nAhmed Hanye - Software Engineer\nDamietta, Egypt | ahmedhanyehossny@gmail.com\n-----------------------------------\n\nFull-Stack Software Engineer specializing in resilient local-first web applications and scalable decoupled backends.\n\nDouble-click the desktop icons to explore my bio, skills, and projects!",
+      "splineAlert": "Shortcut: WebGL_Workspace_3D - Return to 3D room via shutdown or taskbar."
+    },
+    "rotatePrompt": {
+      "title": "System Notice: Display Orientation",
+      "message": "For the best retro OS & 3D workspace experience, please turn your device to landscape mode.",
+      "dismiss": "Continue anyway"
+    },
+    "webglPrompt": {
+      "title": "System Notice: 3D Graphics Acceleration Disabled",
+      "badge": "DISPLAY ADAPTER WARNING",
+      "message": "A WebGL 3D context could not be created. Hardware graphics acceleration is turned off or unsupported in your browser.",
+      "guideTitle": "How to enable hardware acceleration:",
+      "chromeStep": "Chrome / Edge / Brave: Settings → System → Enable 'Use graphics acceleration when available' → Relaunch.",
+      "firefoxStep": "Firefox: Settings → General → Performance → Check 'Use recommended performance settings'.",
+      "safariStep": "Safari: Settings → Advanced → Develop → Experimental Features → WebGL.",
+      "open2dMode": "Launch Windows 95 Desktop (2D Mode)",
+      "learnMore": "WebGL Guide & Verification",
+      "retry": "Retry / Reload",
+      "dismiss": "Close notice"
+    },
+    "workspace": {
+      "backToPortfolio": "Back to Portfolio",
+      "openOs": "Open Windows 95 Desktop"
+    },
+    "shutdownDialog": {
+      "title": "Shut Down Windows",
+      "prompt": "What do you want the computer to do?",
+      "optionExitPortfolio": "Exit to Web Portfolio (Home)",
+      "optionReturn3d": "Return to 3D Workstation Room",
+      "optionRestart": "Restart Ahmed_OS",
+      "btnOk": "OK",
+      "btnCancel": "Cancel"
     }
   }
 }

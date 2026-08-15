@@ -11,6 +11,7 @@ import ms_sans_serif from "react95/dist/fonts/ms_sans_serif.woff2";
 import ms_sans_serif_bold from "react95/dist/fonts/ms_sans_serif_bold.woff2";
 
 import { useTranslations, useLocale } from "next-intl";
+import { useRouter } from "@/i18n/routing";
 import { useWindowManager } from "@/hooks/use-window-manager";
 import { useCompactViewport } from "@/hooks/use-compact-viewport";
 import { playFx } from "@/lib/sound";
@@ -36,6 +37,10 @@ const GlobalStyles = createGlobalStyle`
     src: url('${ms_sans_serif_bold}') format('woff2');
     font-weight: 700;
     font-style: normal;
+  }
+  
+  body, button, input, select, textarea {
+    font-family: 'ms_sans_serif', sans-serif !important;
   }
   
   .win95-screen-container {
@@ -68,6 +73,7 @@ interface OsProps {
 }
 
 export default function Os({ onToggleLanguage, onShutdown, onExitPortfolio }: OsProps) {
+  const router = useRouter();
   const t = useTranslations("OS");
   const locale = useLocale();
   const isRtl = locale === "ar";
@@ -102,7 +108,7 @@ export default function Os({ onToggleLanguage, onShutdown, onExitPortfolio }: Os
     if (onExitPortfolio) {
       onExitPortfolio();
     } else {
-      window.location.href = `/${locale}`;
+      router.push("/");
     }
   };
 

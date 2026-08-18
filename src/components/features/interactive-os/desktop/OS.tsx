@@ -22,7 +22,9 @@ import SystemProperties from "./SystemProperties";
 import AboutMe from "./AboutMe";
 import ProjectsDirectory from "./ProjectsDirectory";
 import SkillsExplorer from "./SkillsExplorer";
+import CertificatesWindow from "./CertificatesWindow";
 import CDriveWindow from "./CDriveWindow";
+import ResumeWindow from "./ResumeWindow";
 import TaskBar from "./TaskBar";
 
 const GlobalStyles = createGlobalStyle`
@@ -39,7 +41,11 @@ const GlobalStyles = createGlobalStyle`
     font-style: normal;
   }
   
-  body, button, input, select, textarea {
+  .win95-screen-container,
+  .win95-screen-container button,
+  .win95-screen-container input,
+  .win95-screen-container select,
+  .win95-screen-container textarea {
     font-family: 'ms_sans_serif', sans-serif !important;
   }
   
@@ -191,6 +197,7 @@ export default function Os({ onToggleLanguage, onShutdown, onExitPortfolio }: Os
               isActive={activeWindowId === "about"}
               onFocus={() => focusWindow("about")}
               zIndex={windows.about.zIndex}
+              onOpenResume={() => openWindow("resume")}
             />
 
             {/* Projects Directory (C:\Projects Explorer) */}
@@ -213,6 +220,26 @@ export default function Os({ onToggleLanguage, onShutdown, onExitPortfolio }: Os
               zIndex={windows.skills.zIndex}
             />
 
+            {/* Certificates Manager */}
+            <CertificatesWindow
+              isOpen={windows.certifications.isOpen}
+              onClose={() => closeWindow("certifications")}
+              isMinimized={windows.certifications.isMinimized}
+              isActive={activeWindowId === "certifications"}
+              onFocus={() => focusWindow("certifications")}
+              zIndex={windows.certifications.zIndex}
+            />
+
+            {/* Resume Document Viewer & Print Manager */}
+            <ResumeWindow
+              isOpen={windows.resume.isOpen}
+              onClose={() => closeWindow("resume")}
+              isMinimized={windows.resume.isMinimized}
+              isActive={activeWindowId === "resume"}
+              onFocus={() => focusWindow("resume")}
+              zIndex={windows.resume.zIndex}
+            />
+
             {/* Local Disk (C:) */}
             <CDriveWindow
               isOpen={windows.cDrive.isOpen}
@@ -222,6 +249,8 @@ export default function Os({ onToggleLanguage, onShutdown, onExitPortfolio }: Os
               onFocus={() => focusWindow("cDrive")}
               zIndex={windows.cDrive.zIndex}
               onOpenProjects={() => openWindow("projects")}
+              onOpenCertificates={() => openWindow("certifications")}
+              onOpenResume={() => openWindow("resume")}
             />
           </div>
 

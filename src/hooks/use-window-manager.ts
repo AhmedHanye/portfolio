@@ -3,7 +3,15 @@
 import { useReducer } from "react";
 import { playFx } from "@/lib/sound";
 
-export type WindowId = "system" | "about" | "skills" | "projects" | "cDrive" | "explorer";
+export type WindowId =
+  | "system"
+  | "about"
+  | "skills"
+  | "projects"
+  | "certifications"
+  | "cDrive"
+  | "explorer"
+  | "resume";
 
 export interface WindowState {
   isOpen: boolean;
@@ -39,8 +47,10 @@ const INITIAL_WINDOWS: WindowsState = {
   about: { isOpen: false, isMinimized: false, zIndex: 10 },
   skills: { isOpen: false, isMinimized: false, zIndex: 10 },
   projects: { isOpen: false, isMinimized: false, zIndex: 10 },
+  certifications: { isOpen: false, isMinimized: false, zIndex: 10 },
   cDrive: { isOpen: false, isMinimized: false, zIndex: 10 },
   explorer: { isOpen: false, isMinimized: false, zIndex: 10 },
+  resume: { isOpen: false, isMinimized: false, zIndex: 10 },
 };
 
 const INITIAL_STATE: WindowManagerState = {

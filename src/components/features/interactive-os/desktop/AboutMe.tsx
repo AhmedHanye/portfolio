@@ -13,6 +13,7 @@ interface AboutMeProps {
   isActive: boolean;
   onFocus: () => void;
   zIndex: number;
+  onOpenResume?: () => void;
 }
 
 export default function AboutMe({
@@ -22,6 +23,7 @@ export default function AboutMe({
   isActive,
   onFocus,
   zIndex,
+  onOpenResume,
 }: AboutMeProps) {
   const t = useTranslations("OS");
 
@@ -115,6 +117,9 @@ export default function AboutMe({
             <p style={{ margin: "2px 0" }}>
               <strong>{t("aboutMe.location")}</strong>
             </p>
+            <p style={{ margin: "2px 0" }}>
+              <strong>{t("aboutMe.phone")}</strong>
+            </p>
           </div>
 
           <div style={{ flexGrow: 1 }} />
@@ -130,6 +135,15 @@ export default function AboutMe({
               borderTop: "1px solid #dfdfdf",
             }}
           >
+            {onOpenResume && (
+              <Button
+                primary
+                onClick={onOpenResume}
+                style={{ fontWeight: "bold" }}
+              >
+                🖨️ {t("aboutMe.resume")}
+              </Button>
+            )}
             <Button onClick={() => handleOpenLink("https://github.com/AhmedHanye")}>
               {t("aboutMe.github")}
             </Button>

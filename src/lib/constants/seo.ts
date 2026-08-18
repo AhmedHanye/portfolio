@@ -1,9 +1,11 @@
 export const SITE_CONFIG = {
   name: "Ahmed Hanye",
   fullName: "Ahmed Hanye Hossny",
-  jobTitle: "Software Engineer | Full-Stack Software Engineer",
+  jobTitle: "Full-Stack Software Engineer",
   twitterHandle: "@ahmedhanye",
   email: "ahmedhanyehossny@gmail.com",
+  phone: "+20 101 236 2894",
+  phoneRaw: "+201012362894",
   links: {
     github: "https://github.com/AhmedHanye",
     linkedin: "https://linkedin.com/in/ahmedhanye",
@@ -12,7 +14,7 @@ export const SITE_CONFIG = {
   locales: ["en", "ar"] as const,
   defaultTitle: "Ahmed Hanye | Full-Stack Software Engineer",
   defaultDescription:
-    "Full-Stack Software Engineer specializing in resilient local-first web applications, distributed data synchronization, and high-performance web systems.",
+    "Full-Stack Software Engineer specializing in resilient local-first architectures, sub-millisecond client reactivity, and scalable API systems across TypeScript and Python.",
 };
 
 export function getSiteUrl(): string {

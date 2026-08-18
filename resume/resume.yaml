@@ -1,0 +1,183 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.8/schema.json
+cv:
+  name: Ahmed Hanye Hossny
+  headline: Full-Stack Software Engineer
+  location: Damietta, Egypt (Open to Remote & Relocation)
+  email: ahmedhanyehossny@gmail.com
+  phone: "+20 101 236 2894"
+  website: https://ahmedhanye.me
+  social_networks:
+    - network: LinkedIn
+      username: ahmedhanye
+    - network: GitHub
+      username: AhmedHanye
+  sections:
+    summary:
+      - Full-Stack Software Engineer and Computer Science graduate specializing in resilient local-first architectures, sub-millisecond client reactivity, and scalable backend systems across TypeScript and Python. Proven track record architecting offline-first synchronization engines, high-throughput asynchronous worker pipelines (Django Ninja + Celery + Redis), and modular Next.js / React web applications with strict type safety and automated testing gates.
+    skills:
+      - label: Languages
+        details: TypeScript, JavaScript, Python, SQL, Bash/Shell Scripting, HTML5 & CSS3
+      - label: Frontend Engineering
+        details: React, Next.js (App Router), Tailwind CSS, TanStack Query, TanStack Form, Zod, Three.js / R3F, GSAP, shadcn/ui, @base-ui/react, next-intl
+      - label: Backend & Distributed
+        details: Django (Ninja, REST), Celery (Multi-lane Workers), Redis, RESTful APIs, AWS SES, Headless Session Auth, CSRF Protection
+      - label: Databases & Sync
+        details: PostgreSQL, SQLite (wa-sqlite WASM), MySQL, PowerSync (WAL Streaming Sync), TanStack DB (In-Memory Reactive Store)
+      - label: DevOps & Architecture
+        details: Docker & Docker Compose, Kubernetes, Git & GitHub Actions (CI/CD), Linux CLI, Local-First Architecture, Feature-Sliced Design (FSD)
+      - label: Testing & Quality DX
+        details: Playwright (E2E), Vitest, Pytest, Storybook, Bun, uv, Ruff, ESLint, React Doctor, Fallow, Steiger
+    education:
+      - institution: Arab Open University (AOU)
+        area: Computer Science
+        degree: B.Sc.
+        start_date: 2022-09
+        end_date: 2026-07
+        highlights:
+          - 'Core Coursework: Algorithms & Data Structures (M269), Software Engineering (TM354), Data Management & Analysis (TM351), Web Technologies (TT284), Operating Systems (TM298), Computer Organization & Architecture (TM103), Machine Learning & AI (TM358), Object-Oriented Programming (M251), Computer Graphics (TM240), Discrete Mathematics & Linear Algebra.'
+    technical_projects:
+      - name: InterviewFlow — Production Technical Hiring SaaS Engine
+        start_date: 2025-11
+        end_date: present
+        summary: High-standard enterprise technical hiring platform engineered to conduct reliable, zero-latency live technical assessments and automated candidate scorecards (in active development toward MVP).
+        highlights:
+          - Architected a dual-engine local-first client pairing TanStack DB for sub-millisecond (< 1ms) in-memory query reactivity with PowerSync and WASM SQLite (wa-sqlite) for background WAL streaming sync, achieving 100% evaluation data retention during network disconnects.
+          - Designed a high-throughput, decoupled REST API using Django Ninja with strict end-to-end OpenAPI type contracts and secure headless session cookie authentication with cross-origin CSRF defense.
+          - Built distributed Celery multi-lane asynchronous worker pipelines backed by Redis message brokers for transactional email delivery via AWS SES and background PDF assessment synthesis.
+          - Implemented Feature-Sliced Design (FSD) across the Next.js / React client with Steiger architectural linting, eliminating circular dependencies and ensuring strict layer isolation.
+          - Established automated quality assurance with Playwright E2E suites and Storybook interaction play tests, achieving 90%+ critical path coverage and zero regression deployments.
+      - name: '[InterviewFlow Sandbox — Graduation Project Prototype](https://github.com/AhmedHanye/InterviewFlow-prototype)'
+        start_date: 2025-09
+        end_date: 2026-07
+        summary: Exploratory real-time candidate evaluation sandbox developed as an academic graduation project at Arab Open University, validating the feasibility for the v2 SaaS engine.
+        highlights:
+          - Engineered a synchronized multi-evaluator scoring interface with live evaluation rubrics using React, TypeScript, Vite, Tailwind CSS, and shadcn/ui.
+          - Integrated Supabase and PostgreSQL with Row-Level Security (RLS) policies and optimistic client updates for concurrent interviewers.
+          - Implemented full test suites using Playwright and Vitest to validate real-time synchronization mechanics and scoring state persistence.
+      - name: '[Retro OS & 3D Interactive Portfolio Platform](https://ahmedhanye.me)'
+        start_date: 2026-01
+        end_date: 2026-07
+        summary: Dual-experience portfolio combining an interactive 3D CRT workstation and a simulated Windows 95 desktop OS.
+        highlights:
+          - Engineered a 3D workstation simulation with Three.js, React Three Fiber, and Spline, featuring dynamic cursor tracking and interactive lighting.
+          - Implemented a complete Windows 95 desktop environment in React / Next.js with draggable, resizable window managers and Web Audio API procedural soundscapes.
+          - Delivered full internationalization (English & Arabic) with RTL layout adaptation using next-intl, maintaining 60 FPS graphics and zero WebGL memory leaks.
+      - name: '[Awwwards Interactive Web Experience](https://github.com/AhmedHanye/awwwards)'
+        start_date: 2025-03
+        end_date: 2025-06
+        summary: High-framerate interactive web showcase demonstrating fluid scroll-driven storytelling and complex animation orchestration.
+        highlights:
+          - Orchestrated 60 FPS interactive animations, parallax effects, and layout morphs using GSAP (@gsap/react) and ScrollTrigger.
+          - Built responsive, hardware-accelerated SVG polygon transitions and dynamic micro-interactions with Tailwind CSS.
+    certifications:
+      - name: '[GitHub Foundations](https://www.credly.com/badges/4ce2fa7e-90ff-4d7f-9d34-f04056defe0d/public_url)'
+        date: GitHub / Credly
+        highlights:
+          - Validated core Git workflows, repository collaboration, GitHub Actions CI/CD automation, and repository security best practices.
+      - name: '[AI Engineer for Developers Associate](https://www.datacamp.com/certificate/AIEDA0013770502757)'
+        date: DataCamp
+        highlights:
+          - Validated LLM APIs, LangChain workflows, OpenAI APIs, vector embeddings, and production AI integration.
+      - name: '[SQL Associate Certification](https://www.datacamp.com/certificate/SQA0019339139750)'
+        date: DataCamp
+        highlights:
+          - Verified relational schema modeling, PostgreSQL query optimization, multi-table joins, data transformation, and aggregation.
+      - name: '[Containerization & Virtualization with Docker & Kubernetes](https://www.datacamp.com/completed/statement-of-accomplishment/track/91a0f13bbb41ff496ba2f1373fc32c8c758aaafd)'
+        date: DataCamp
+        highlights:
+          - Verified Docker container lifecycles, multi-stage builds, image optimization, Docker Compose, and Kubernetes orchestration.
+      - name: '[Python Developer Career Track](https://www.datacamp.com/completed/statement-of-accomplishment/track/78ff9dbee31fd136c2d1f30220d42b16548172d6)'
+        date: DataCamp
+        highlights:
+          - Validated OOP architecture, data structures & algorithms, package development, clean code principles, and pytest unit testing.
+      - name: '[The Full Stack](https://www.coursera.org/account/accomplishments/verify/VUNTB7X4RB3B)'
+        date: Meta
+        highlights:
+          - Verified full-stack web architecture connecting Django backend services with modern responsive frontend components and REST APIs.
+      - name: '[APIs](https://www.coursera.org/account/accomplishments/verify/6KL22ZWVDRHQ)'
+        date: Meta
+        highlights:
+          - Validated RESTful API architecture, Django REST Framework serialization, token authentication, endpoint design, and API testing.
+      - name: '[Django Web Framework](https://www.coursera.org/account/accomplishments/verify/K8KHTEKNC8W4)'
+        date: Meta
+        highlights:
+          - Verified Django MVT architecture, ORM data modeling, migrations, user authentication, views routing, and admin interfaces.
+      - name: '[Back-End Developer Capstone](https://www.coursera.org/account/accomplishments/verify/9QWUKSWZ5ZJQ)'
+        date: Meta
+        highlights:
+          - Implemented complete backend services with Django, Django REST Framework, MySQL database integration, and automated unit tests.
+      - name: '[Introduction to Databases for Back-End Development](https://www.coursera.org/account/accomplishments/verify/TAK9AF6NTQZU)'
+        date: Meta
+        highlights:
+          - Verified relational database modeling, SQL queries, MySQL database administration, table constraints, and schema design.
+      - name: '[Professional Front-End Web Development](https://confirm.udacity.com/ZSPSSPFP)'
+        date: Udacity
+        highlights:
+          - Accredited in advanced DOM manipulation, responsive web architecture, asynchronous Web APIs, and client-side performance.
+      - name: '[Learn Linux](https://www.boot.dev/certificates/823982bd-c76a-4445-bc41-4d82fe1423a5)'
+        date: Boot.dev
+        highlights:
+          - Validated Linux terminal proficiency, shell scripting, process management, file permissions, I/O redirection, and package management.
+      - name: '[Learn Git](https://www.boot.dev/certificates/c71c32ae-378a-469e-9cc3-40640bb04721)'
+        date: Boot.dev
+        highlights:
+          - Validated Git internals, plumbing commands, branching workflows, interactive rebasing, merge strategies, and conflict resolution.
+design:
+  theme: engineeringresumes
+  page:
+    size: us-letter
+    top_margin: 0.48in
+    bottom_margin: 0.48in
+    left_margin: 0.48in
+    right_margin: 0.48in
+    show_footer: false
+    show_top_note: false
+  colors:
+    body: rgb(0, 0, 0)
+    name: rgb(0, 0, 0)
+    headline: rgb(0, 0, 0)
+    connections: rgb(0, 0, 0)
+    section_titles: rgb(0, 0, 0)
+    links: rgb(0, 70, 150)
+  typography:
+    line_spacing: 0.56em
+    alignment: justified-with-no-hyphenation
+    font_size:
+      body: 9.4pt
+      name: 20pt
+      headline: 9.4pt
+      connections: 8.9pt
+      section_titles: 1.14em
+  header:
+    alignment: center
+    space_below_name: 0.32cm
+    space_below_headline: 0.22cm
+    space_below_connections: 0.32cm
+    connections:
+      phone_number_format: international
+      hyperlink: true
+      display_urls_instead_of_usernames: true
+      separator: '|'
+      space_between_connections: 0.3cm
+  section_titles:
+    type: with_full_line
+    line_thickness: 0.5pt
+    space_above: 0.34cm
+    space_below: 0.18cm
+  sections:
+    allow_page_break: true
+    space_between_regular_entries: 0.24cm
+    space_between_text_based_entries: 0.1cm
+  entries:
+    date_and_location_width: 3.5cm
+    highlights:
+      bullet: '•'
+      space_left: 0cm
+      space_above: 0.04cm
+      space_between_items: 0.04cm
+      space_between_bullet_and_text: 0.3em
+locale:
+  language: english
+settings:
+  current_date: today
+  pdf_title: Ahmed Hanye - Full-Stack Software Engineer Resume

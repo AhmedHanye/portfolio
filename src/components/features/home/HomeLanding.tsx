@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { ThemeProvider, createGlobalStyle } from "styled-components";
 import original from "react95/dist/themes/original";
 import StyledComponentsRegistry from "@/lib/registry";
@@ -17,12 +17,13 @@ import { ScrollTrigger } from "@/lib/gsap";
 // Section Components
 import HomeNavbar from "./HomeNavbar";
 import HeroSection from "./HeroSection";
-import InteractiveOsGateway from "./InteractiveOsGateway";
 import AboutSection from "./AboutSection";
 import ProjectsSection from "./ProjectsSection";
 import SkillsSection from "./SkillsSection";
+import CertificationsSection from "./CertificationsSection";
 import ContactSection from "./ContactSection";
 import HomeFooter from "./HomeFooter";
+import ResumeModal from "./ResumeModal";
 
 const GlobalStyles = createGlobalStyle`
   @font-face {
@@ -65,6 +66,7 @@ export default function HomeLanding() {
   const locale = useLocale();
   const isRtl = locale === "ar";
   const mainRef = useRef<HTMLDivElement>(null);
+  const [isResumeOpen, setIsResumeOpen] = useState(false);
 
   useGSAP(
     () => {
@@ -76,6 +78,14 @@ export default function HomeLanding() {
     },
     { scope: mainRef }
   );
+
+  const handleOpenResume = () => {
+    setIsResumeOpen(true);
+  };
+
+  const handleCloseResume = () => {
+    setIsResumeOpen(false);
+  };
 
   return (
     <StyledComponentsRegistry>
@@ -93,20 +103,23 @@ export default function HomeLanding() {
           }}
         >
           {/* Top Sticky Navigation */}
-          <HomeNavbar />
+          <HomeNavbar onOpenResume={handleOpenResume} />
 
           {/* Main Landing Sections */}
           <main className="flex-1 flex flex-col gap-4 py-4">
             <HeroSection />
-            <InteractiveOsGateway />
-            <AboutSection />
+            <AboutSection onOpenResume={handleOpenResume} />
             <ProjectsSection />
             <SkillsSection />
+            <CertificationsSection />
             <ContactSection />
           </main>
 
           {/* Bottom Taskbar Footer */}
           <HomeFooter />
+
+          {/* Interactive Resume & Print Modal */}
+          <ResumeModal isOpen={isResumeOpen} onClose={handleCloseResume} />
         </div>
       </ThemeProvider>
     </StyledComponentsRegistry>

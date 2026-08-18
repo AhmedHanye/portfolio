@@ -14,44 +14,12 @@ import { playFx } from "@/lib/sound";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 
-const LANGUAGES = ["TypeScript", "JavaScript", "Python", "SQL", "HTML5 & CSS3"];
-
-const FRAMEWORKS = [
-  "Next.js 16+",
-  "React 19",
-  "Django 6.0+",
-  "Django Ninja",
-  "Celery",
-  "PowerSync",
-  "TanStack DB",
-  "Tailwind CSS v4",
-  "Fumadocs",
-  "shadcn/ui",
-  "@base-ui/react",
-  "TanStack Query v5",
-  "TanStack Form",
-  "Zod v4",
-  "next-intl",
-  "Three.js / R3F",
-  "GSAP",
-];
-
-const TOOLS_AND_DBS = [
-  "Bun",
-  "uv",
-  "PostgreSQL 18",
-  "SQLite (wa-sqlite)",
-  "Redis",
-  "Docker & Compose",
-  "Storybook 10",
-  "Playwright",
-  "Vitest",
-  "React Doctor",
-  "Fallow",
-  "Ruff",
-  "ESLint / Prettier",
-  "Steiger (FSD)",
-];
+import {
+  LANGUAGES_SKILLS,
+  FRAMEWORKS_SKILLS,
+  TOOLS_AND_DBS_SKILLS,
+  type SkillItem,
+} from "@/lib/constants/skills";
 
 const SPECIALTIES = [
   {
@@ -81,22 +49,37 @@ const SPECIALTIES = [
   },
 ];
 
-function SkillBadge({ name }: { name: string }) {
+function SkillBadge({ skill }: { skill: SkillItem }) {
   return (
-    <Frame
-      variant="well"
+    <a
+      href={skill.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      title={`Visit official ${skill.name} website`}
+      aria-label={`Official website for ${skill.name}`}
+      onClick={() => playFx("click")}
       onMouseEnter={() => playFx("click")}
-      style={{
-        padding: "4px 10px",
-        fontSize: "11px",
-        fontWeight: "bold",
-        backgroundColor: "#f0f0f0",
-        cursor: "default",
-        transition: "background 0.15s ease",
-      }}
+      className="inline-block no-underline text-inherit focus:outline-hidden focus:ring-1 focus:ring-blue-800"
+      style={{ textDecoration: "none", color: "inherit" }}
     >
-      {name}
-    </Frame>
+      <Frame
+        variant="well"
+        style={{
+          padding: "4px 10px",
+          fontSize: "11px",
+          fontWeight: "bold",
+          backgroundColor: "#f0f0f0",
+          cursor: "pointer",
+          transition: "background 0.15s ease",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "4px",
+        }}
+        className="hover:bg-neutral-200 active:bg-neutral-300"
+      >
+        <bdi dir="ltr">{skill.name}</bdi>
+      </Frame>
+    </a>
   );
 }
 
@@ -123,7 +106,7 @@ export default function SkillsSection() {
   return (
     <section
       ref={containerRef}
-      id="skills-section"
+      id="skills"
       className="w-full max-w-5xl mx-auto px-4 py-8"
       aria-label="Technical Skills and Stack"
     >
@@ -167,8 +150,8 @@ export default function SkillsSection() {
             {/* Languages Group */}
             <GroupBox label={`💻 ${t("languages")}`} style={{ backgroundColor: "#fafafa" }}>
               <div className="flex flex-wrap gap-2 p-1">
-                {LANGUAGES.map((skill) => (
-                  <SkillBadge key={skill} name={skill} />
+                {LANGUAGES_SKILLS.map((skill) => (
+                  <SkillBadge key={skill.name} skill={skill} />
                 ))}
               </div>
             </GroupBox>
@@ -176,8 +159,8 @@ export default function SkillsSection() {
             {/* Frameworks & Libraries */}
             <GroupBox label={`📦 ${t("frameworks")}`} style={{ backgroundColor: "#fafafa" }}>
               <div className="flex flex-wrap gap-2 p-1">
-                {FRAMEWORKS.map((skill) => (
-                  <SkillBadge key={skill} name={skill} />
+                {FRAMEWORKS_SKILLS.map((skill) => (
+                  <SkillBadge key={skill.name} skill={skill} />
                 ))}
               </div>
             </GroupBox>
@@ -185,8 +168,8 @@ export default function SkillsSection() {
             {/* Tools & Databases */}
             <GroupBox label={`🛠 ${t("tools")}`} style={{ backgroundColor: "#fafafa" }}>
               <div className="flex flex-wrap gap-2 p-1">
-                {TOOLS_AND_DBS.map((skill) => (
-                  <SkillBadge key={skill} name={skill} />
+                {TOOLS_AND_DBS_SKILLS.map((skill) => (
+                  <SkillBadge key={skill.name} skill={skill} />
                 ))}
               </div>
             </GroupBox>

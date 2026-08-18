@@ -1,51 +1,67 @@
 # Ahmed Hanye — Developer Portfolio
 
-An immersive, interactive developer portfolio built as a **Windows 95-style OS simulation** running inside a photorealistic 3D workspace scene. Built with Next.js 16, React 19, Three.js, and GSAP.
+An immersive, high-performance developer portfolio built with **Next.js 16**, **React 19**, **Three.js / React Three Fiber**, **GSAP**, and **Tailwind CSS v4**.
+
+The portfolio offers a dual-experience architecture: a modern retro **Windows 95-inspired landing page** and an interactive **3D CRT workspace simulation** at `/interactive-os`.
 
 ---
 
 ## ✨ Features
 
-- **3D Workspace Scene** — Photorealistic CRT monitor, desk, lamp, and cactus rendered via Spline + `@react-three/fiber`
-- **CRT Mouse-Look** — The CRT monitor tracks your cursor with a smooth quaternion slerp animation
-- **Interactive Lamp** — Click the lamp head to toggle the spotlight with a premium GSAP flicker timeline
-- **Scroll-Driven Camera** — GSAP ScrollTrigger animates the camera from a wide establishing shot into a close-up OS view on scroll
-- **Windows 95 OS UI** — A fully functional win95 desktop (via `react95`) with:
-  - `ahmed_os.exe` — Main system window with Diagnostics, About Me, Skills, and Projects tabs
-  - `C:\` Drive Explorer — Simulated folder browser
-  - Projects Explorer — Links to live projects & GitHub
-  - Desktop icons + Start Menu with language switcher
-- **Bilingual (EN / AR)** — Full RTL support via `next-intl` with instant locale switching
-- **Lazy-loaded Screen Content** — The OS and BotFace components are dynamically imported to minimize the initial bundle
+### 🖥️ 1. Retro-Modern Home Portfolio (`/` & `/[locale]`)
+- **Retro Navigation Bar** — Windows 95 `AppBar` with smooth scrolling navigation (About, Projects, Skills, Contact), instant EN/AR locale switching, sound effects toggle, and 3D mode launcher.
+- **Hero & Profile** — Retro window avatar container, resume download, professional credentials, and direct gateway to the 3D workspace.
+- **Projects Showcase** — Detailed project case studies:
+  - **InterviewFlow** — High-standard enterprise technical hiring SaaS.
+  - **InterviewFlow (Graduation Prototype)** — Real-time collaborative candidate evaluation sandbox.
+  - **Awwards** — 60 FPS GSAP-orchestrated interactive web experience.
+- **Technical Skills Matrix** — Categorized overview of frontend, backend, databases, cloud, DevOps, and architectural proficiencies.
+- **Contact & Communication** — Direct communication channels and social links.
+- **Retro Sound Design** — Synthesized Web Audio API clicks, alerts, and navigation soundscapes.
+
+### 🌐 2. Interactive 3D OS Workspace (`/interactive-os`)
+- **3D Workspace Scene** — Photorealistic CRT monitor, desk, lamp, and room rendered with Three.js, `@react-three/fiber`, and Spline.
+- **CRT Mouse-Look Tracking** — CRT monitor smoothly tracks the cursor with quaternion slerp calculations.
+- **Interactive Desk Lamp** — Clickable lamp head toggling spotlight illumination with custom GSAP flicker sequence.
+- **Simulated Windows 95 Desktop OS** — Rendered directly into the CRT display with full window management:
+  - Multi-window management (Draggable, Minimizable, Maximizable, Focus-aware, Z-index stack).
+  - System Properties — Deep-dive technical architecture case studies.
+  - Skills Explorer — Interactive categorized tech stack tree.
+  - Projects Directory — Live project previews, tech stack badges, and GitHub repository links.
+  - `C:\` Drive & File Explorer — Windows 95 filesystem browsing simulation.
+  - Start Menu & Taskbar — System controls, desktop icons, audio toggles, and locale switcher.
+- **Responsive Mobile & Fallback Views** — Device orientation prompts, WebGL support detection, and compact viewport handling.
 
 ---
 
-## 🛠 Tech Stack
+## 🛠️ Tech Stack
 
-| Category | Technology |
-|---|---|
-| Framework | Next.js 16 (SSG, App Router) |
-| UI Library | React 19 |
-| 3D Engine | Three.js 0.151 + `@react-three/fiber` + `@react-three/drei` |
-| 3D Scene | Spline (`@splinetool/r3f-spline`, `@splinetool/loader`) |
-| Animations | GSAP 3.15 (ScrollTrigger, ScrollToPlugin, SplitText, Flip, ScrambleText) |
-| OS UI | `react95` + `styled-components` |
-| i18n | `next-intl` 4 (EN + AR, RTL support) |
-| Styling | Tailwind CSS v4 |
-| Package Manager | **Bun** (required) |
-| Language | TypeScript 5 |
+| Category | Technology | Description |
+|---|---|---|
+| **Framework** | **Next.js 16** | App Router, static generation, server & client components |
+| **Runtime & PM** | **Bun** | Ultra-fast JavaScript runtime and exclusive package manager |
+| **UI Library** | **React 19** | Modern React with React Compiler optimizations |
+| **3D & WebGL** | **Three.js (0.151)** + **R3F** | `@react-three/fiber`, `@react-three/drei`, `@splinetool/loader` |
+| **Animations** | **GSAP 3.15** + **@gsap/react** | ScrollTrigger, timelines, transforms, and UI motion |
+| **Styling** | **Tailwind CSS v4** | Modern utility-first CSS engine + `@tailwindcss/postcss` |
+| **Retro UI System** | **React95** + **styled-components** | Windows 95 components, icons, and theme registry |
+| **i18n & RTL** | **next-intl 4** | Full English & Arabic internationalization with RTL support |
+| **Audio** | **Web Audio API** | Procedural sound generation and interface sound effects |
+| **Quality & Audit** | **ESLint 9**, **TypeScript 6**, **React Doctor**, **Fallow** | Static analysis, dead-code detection, and architecture audits |
 
 ---
 
 ## 🚀 Getting Started
 
-> **Requires [Bun](https://bun.sh).** Do not use `npm`, `pnpm`, or `yarn`.
+### Prerequisites
+
+This project **requires [Bun](https://bun.sh)**. Do not use `npm`, `pnpm`, or `yarn`.
 
 ```bash
 # Install dependencies
 bun install
 
-# Start the development server
+# Start development server
 bun dev
 ```
 
@@ -59,72 +75,99 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 src/
 ├── app/
 │   ├── [locale]/
-│   │   ├── layout.tsx       # Root layout: fonts, i18n provider, GSAP initializer
-│   │   └── page.tsx         # Home page — renders WorkspaceSpline
-│   └── globals.css          # Tailwind v4 design tokens + base styles
+│   │   ├── interactive-os/
+│   │   │   └── page.tsx             # Dedicated 3D Interactive OS route
+│   │   ├── layout.tsx               # Root layout: fonts, i18n, metadata, styled registry
+│   │   ├── opengraph-image.tsx      # Dynamic OpenGraph card
+│   │   ├── page.tsx                 # Home portfolio landing page
+│   │   └── twitter-image.tsx        # Dynamic Twitter card
+│   ├── globals.css                  # Tailwind v4 theme configuration & global styles
+│   └── manifest.json                # Web App Manifest
 ├── components/
-│   ├── global/
-│   │   └── GSAPInitializer.tsx   # Client component that bootstraps GSAP plugins
-│   ├── loaders/                  # Loading state components (Spline, OS, BotFace)
-│   ├── screen/
-│   │   ├── OS.tsx                # Windows 95 OS shell (window state manager)
-│   │   ├── BotFace.tsx           # Animated bot-face shown before scroll
-│   │   ├── CrtHtmlScreen.tsx     # R3F portal that mounts HTML onto the 3D CRT mesh
-│   │   └── os/                   # Individual OS windows & desktop components
-│   │       ├── AboutMe.tsx
-│   │       ├── CDriveWindow.tsx
-│   │       ├── DesktopIcons.tsx
-│   │       ├── ExplorerWindow.tsx
-│   │       ├── ProjectsDirectory.tsx
-│   │       ├── SkillsExplorer.tsx
-│   │       ├── SystemProperties.tsx
-│   │       ├── SystemWindow.tsx
-│   │       └── TaskBar.tsx
-│   └── WorkspaceSpline.tsx       # Root 3D canvas + scene composition
-├── hooks/
-│   ├── use-canvas-texture.ts     # rAF-driven canvas → THREE.CanvasTexture
-│   ├── use-crt-mouse-look.ts     # Quaternion slerp mouse-tracking for CRT
-│   ├── use-crt-screen-geometry.ts # Computes HTML overlay size from mesh bounds
-│   ├── use-lamp-interactivity.ts  # Lamp click/hover + GSAP flicker animation
-│   ├── use-screen-content.ts      # ScrollTrigger-driven bot-face ↔ OS switch
-│   ├── use-spline-scene.ts        # Spline scene loader, shadow config, interactions
-│   ├── use-text-direction.ts      # Returns 'ltr' | 'rtl' based on current locale
-│   ├── use-video-texture.ts       # Video element → THREE.VideoTexture
-│   └── use-workspace-camera.ts    # Responsive zoom + scroll-driven camera animation
-├── i18n/
-│   ├── request.ts                 # next-intl server request config
-│   └── routing.ts                 # Locale routing config (en, ar)
-├── lib/
-│   ├── gsap.ts                    # GSAP + plugin registration (client-only)
-│   ├── registry.tsx               # styled-components SSR registry
-│   └── utils.ts                   # cn() utility (clsx + tailwind-merge)
-├── messages/
-│   ├── en.json                    # English translations
-│   └── ar.json                    # Arabic translations
-└── proxy.ts                       # next-intl middleware (locale detection)
+│   ├── features/
+│   │   ├── home/                    # Home portfolio components
+│   │   │   ├── AboutSection.tsx
+│   │   │   ├── ContactSection.tsx
+│   │   │   ├── HeroSection.tsx
+│   │   │   ├── HomeFooter.tsx
+│   │   │   ├── HomeLanding.tsx
+│   │   │   ├── HomeNavbar.tsx
+│   │   │   ├── ProjectsSection.tsx
+│   │   │   └── SkillsSection.tsx
+│   │   └── interactive-os/          # 3D scene & OS simulation components
+│   │       ├── BotFace.tsx
+│   │       ├── RotatePrompt.tsx
+│   │       ├── WebGLErrorBoundary.tsx
+│   │       ├── WebglPrompt.tsx
+│   │       ├── WorkspaceSpline.tsx
+│   │       ├── desktop/             # Desktop OS windows, icons & taskbar
+│   │       │   ├── AboutMe.tsx
+│   │       │   ├── CDriveWindow.tsx
+│   │       │   ├── DesktopIcons.tsx
+│   │       │   ├── OS.tsx
+│   │       │   ├── ProjectsDirectory.tsx
+│   │       │   ├── SkillsExplorer.tsx
+│   │       │   ├── SystemProperties.tsx
+│   │       │   ├── TaskBar.tsx
+│   │       │   └── WindowFrame.tsx
+│   │       └── loaders/             # Suspense & progress loaders
+│   │           ├── BotFaceLoading.tsx
+│   │           ├── OsLoader.tsx
+│   │           └── SplineProgressIndicator.tsx
+│   └── layout/
+│       └── GSAPInitializer.tsx      # Client GSAP plugin registration
+├── hooks/                           # Custom React hooks (3D, camera, audio, windowing)
+│   ├── use-canvas-texture.ts
+│   ├── use-compact-viewport.ts
+│   ├── use-crt-mouse-look.ts
+│   ├── use-draggable-window.ts
+│   ├── use-lamp-interactivity.ts
+│   ├── use-screen-content.ts
+│   ├── use-spline-scene.ts
+│   ├── use-text-direction.ts
+│   ├── use-video-texture.ts
+│   ├── use-webgl-support.ts
+│   ├── use-window-manager.ts
+│   └── use-workspace-camera.ts
+├── i18n/                            # next-intl configuration & routing
+│   ├── request.ts
+│   └── routing.ts
+├── lib/                             # Utilities, sound synthesizers, GSAP setup
+│   ├── constants/
+│   │   └── seo.ts
+│   ├── gsap.ts
+│   ├── registry.tsx
+│   ├── sound.ts
+│   └── suppress-spline-warnings.ts
+├── messages/                        # Translation dictionaries
+│   ├── ar.json                      # Arabic translations (RTL)
+│   └── en.json                      # English translations (LTR)
+└── proxy.ts                         # Locale detection middleware
 ```
 
 ---
 
-## 🌍 Internationalization
+## 🌍 Internationalization & RTL
 
-The site supports **English** and **Arabic** with full RTL layout. Switch languages via:
-- The **Start Menu → 🌐 Language** option inside the OS UI
-- The **language button** in the taskbar tray (bottom-right)
-
-Locale routes: `/en` (default) and `/ar`.
+The portfolio provides first-class support for **English (`en`)** and **Arabic (`ar`)** with complete RTL layout adaptation:
+- Automatic document direction switching (`dir="ltr"` / `dir="rtl"`).
+- Synchronized translation dictionaries in `src/messages/`.
+- Instant language toggle directly from the navigation bar, Windows 95 Start Menu, and Taskbar tray.
 
 ---
 
-## 📜 Scripts
+## 📜 Available Scripts
 
 | Command | Description |
 |---|---|
-| `bun dev` | Start dev server |
-| `bun build` | Production build |
+| `bun dev` | Start development server with Turbopack / Next.js |
+| `bun build` | Create optimized production build |
 | `bun start` | Start production server |
-| `bun lint` | Run ESLint |
-| `bun typecheck` | Run TypeScript type checking (`tsc --noEmit`) |
+| `bun lint` | Run ESLint across the codebase |
+| `bun typecheck` | Run TypeScript compiler typecheck (`tsc --noEmit`) |
+| `bun run doctor` | Run React Doctor to audit performance, rules & accessibility |
+| `bun run fallow` | Run Fallow codebase intelligence (dead code, architecture boundaries) |
+| `bun run audit` | Run combined quality gate audit (`doctor` + `fallow`) |
 
 ---
 

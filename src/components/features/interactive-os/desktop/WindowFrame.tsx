@@ -10,6 +10,8 @@ interface WindowFrameProps {
   isOpen: boolean;
   onClose: () => void;
   onMinimize?: () => void;
+  onOpenNewTab?: () => void;
+  newTabTitle?: string;
   isMinimized: boolean;
   isActive: boolean;
   onFocus: () => void;
@@ -40,6 +42,31 @@ function computeWindowDimensions(
     width: `min(${defaultWidth}px, calc(100% - 30px))`,
     height: `min(${defaultHeight}px, calc(100% - 30px))`,
   };
+}
+
+function WindowNewTabButton({
+  onOpenNewTab,
+  title = "Open in New Tab",
+}: {
+  onOpenNewTab?: () => void;
+  title?: string;
+}) {
+  if (!onOpenNewTab) return null;
+  return (
+    <Button
+      size="sm"
+      square
+      onPointerDown={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        e.stopPropagation();
+        onOpenNewTab();
+      }}
+      title={title}
+      aria-label={title}
+    >
+      <span style={{ fontWeight: "bold", transform: "translateY(-1px)" }}>↗</span>
+    </Button>
+  );
 }
 
 function WindowMinimizeButton({ onMinimize }: { onMinimize?: () => void }) {
@@ -104,6 +131,8 @@ function WindowCloseButton({ onClose }: { onClose: () => void }) {
 }
 
 interface WindowHeaderButtonsProps {
+  onOpenNewTab?: () => void;
+  newTabTitle?: string;
   onMinimize?: () => void;
   allowMaximize: boolean;
   isCompact: boolean;
@@ -113,6 +142,8 @@ interface WindowHeaderButtonsProps {
 }
 
 function WindowHeaderButtons({
+  onOpenNewTab,
+  newTabTitle,
   onMinimize,
   allowMaximize,
   isCompact,
@@ -124,6 +155,7 @@ function WindowHeaderButtons({
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
+      <WindowNewTabButton onOpenNewTab={onOpenNewTab} title={newTabTitle} />
       <WindowMinimizeButton onMinimize={onMinimize} />
       <WindowMaximizeButton
         show={showMaximize}
@@ -160,6 +192,8 @@ function WindowFrame({
   isOpen,
   onClose,
   onMinimize,
+  onOpenNewTab,
+  newTabTitle,
   isMinimized,
   isActive,
   onFocus,
@@ -228,6 +262,8 @@ function WindowFrame({
       >
         <WindowFrameTitle icon={icon} title={title} />
         <WindowHeaderButtons
+          onOpenNewTab={onOpenNewTab}
+          newTabTitle={newTabTitle}
           onMinimize={onMinimize}
           allowMaximize={allowMaximize}
           isCompact={isCompact}

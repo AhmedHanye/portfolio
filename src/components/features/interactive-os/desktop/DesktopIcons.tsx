@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { Computer, CdMusic, Wordpad, Progman11, Folder, Globe } from "@react95/icons";
+import { Computer, CdMusic, Wordpad, Progman11, Folder, Globe, FileText, Printer } from "@react95/icons";
 import { type WindowId } from "@/hooks/use-window-manager";
 import { useCompactViewport } from "@/hooks/use-compact-viewport";
 
@@ -154,6 +154,8 @@ const DESKTOP_ICON_LIST: Array<{
   { id: "about", labelKey: "desktop.aboutMe", renderIcon: (s) => <Wordpad variant="32x32_4" style={{ width: s, height: s }} /> },
   { id: "projects", labelKey: "desktop.myProjects", renderIcon: (s) => <Folder variant="32x32_4" style={{ width: s, height: s }} /> },
   { id: "skills", labelKey: "desktop.mySkills", renderIcon: (s) => <Progman11 variant="32x32_4" style={{ width: s, height: s }} /> },
+  { id: "certifications", labelKey: "desktop.myCertificates", renderIcon: (s) => <FileText variant="32x32_4" style={{ width: s, height: s }} /> },
+  { id: "resume", labelKey: "desktop.myResume", renderIcon: (s) => <Printer variant="32x32_4" style={{ width: s, height: s }} /> },
   { id: "cDrive", labelKey: "desktop.cDrive", renderIcon: (s) => <CdMusic variant="32x32_4" style={{ width: s, height: s }} /> },
   { id: "webPortfolio", labelKey: "desktop.webPortfolio", renderIcon: (s) => <Globe variant="32x32_4" style={{ width: s, height: s }} /> },
 ];

@@ -18,9 +18,11 @@ import {
   Folder,
   Wordpad,
   Progman11,
+  FileText,
   MediaAudio,
   Mute,
   Globe,
+  Printer,
 } from "@react95/icons";
 import { playFx, useSoundState } from "@/lib/sound";
 import { useCompactViewport } from "@/hooks/use-compact-viewport";
@@ -84,6 +86,14 @@ function StartMenuDropdown({
       <MenuListItem onClick={handleItemClick(() => onOpenWindow("skills"))}>
         <Progman11 variant="32x32_4" style={{ width: "16px", height: "16px", ...iconSpacing(isRtl) }} />
         {t("startMenu.skills")}
+      </MenuListItem>
+      <MenuListItem onClick={handleItemClick(() => onOpenWindow("certifications"))}>
+        <FileText variant="16x16_4" style={{ width: "16px", height: "16px", ...iconSpacing(isRtl) }} />
+        {t("startMenu.certificates")}
+      </MenuListItem>
+      <MenuListItem onClick={handleItemClick(() => onOpenWindow("resume"))}>
+        <Printer variant="16x16_4" style={{ width: "16px", height: "16px", ...iconSpacing(isRtl) }} />
+        {t("startMenu.resume")}
       </MenuListItem>
       <MenuListItem onClick={handleItemClick(() => onOpenWindow("system"))}>
         <Computer variant="16x16_4" style={{ width: "16px", height: "16px", ...iconSpacing(isRtl) }} />
@@ -189,6 +199,16 @@ const TASKBAR_WINDOW_CONFIGS: Array<{
     id: "skills",
     icon: <Progman11 variant="32x32_4" style={{ width: "16px", height: "16px", flexShrink: 0 }} />,
     titleKey: "taskbar.skills",
+  },
+  {
+    id: "certifications",
+    icon: <FileText variant="16x16_4" style={{ width: "16px", height: "16px", flexShrink: 0 }} />,
+    titleKey: "taskbar.certificates",
+  },
+  {
+    id: "resume",
+    icon: <Printer variant="16x16_4" style={{ width: "16px", height: "16px", flexShrink: 0 }} />,
+    titleKey: "taskbar.resume",
   },
   {
     id: "cDrive",

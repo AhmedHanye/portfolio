@@ -9,6 +9,13 @@ import {
 } from "react95";
 import { useTranslations } from "next-intl";
 import { Progman11 } from "@react95/icons";
+import {
+  LANGUAGES_SKILLS,
+  FRAMEWORKS_SKILLS,
+  TOOLS_AND_DBS_SKILLS,
+  type SkillItem,
+} from "@/lib/constants/skills";
+import { playFx } from "@/lib/sound";
 import WindowFrame from "./WindowFrame";
 
 interface SkillsExplorerProps {
@@ -18,6 +25,37 @@ interface SkillsExplorerProps {
   isActive: boolean;
   onFocus: () => void;
   zIndex: number;
+}
+
+function ExplorerSkillBadge({ skill }: { skill: SkillItem }) {
+  return (
+    <a
+      href={skill.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      title={`Visit official ${skill.name} website`}
+      aria-label={`Official website for ${skill.name}`}
+      onClick={() => playFx("click")}
+      onMouseEnter={() => playFx("click")}
+      style={{ textDecoration: "none", color: "inherit" }}
+    >
+      <Frame
+        variant="well"
+        style={{
+          padding: "3px 8px",
+          fontSize: "11px",
+          background: "#f0f0f0",
+          cursor: "pointer",
+          display: "inline-flex",
+          alignItems: "center",
+          transition: "background 0.15s ease",
+        }}
+        className="hover:bg-neutral-200 active:bg-neutral-300"
+      >
+        <bdi dir="ltr">{skill.name}</bdi>
+      </Frame>
+    </a>
+  );
 }
 
 export default function SkillsExplorer({
@@ -84,14 +122,8 @@ export default function SkillsExplorer({
             {/* Languages Group */}
             <GroupBox label={`💻 ${t("skills.languages")}`}>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", padding: "4px 0" }}>
-                {["TypeScript", "JavaScript", "Python", "SQL", "HTML5 & CSS3"].map((skill) => (
-                  <Frame
-                    key={skill}
-                    variant="well"
-                    style={{ padding: "3px 8px", fontSize: "11px", background: "#f0f0f0" }}
-                  >
-                    {skill}
-                  </Frame>
+                {LANGUAGES_SKILLS.map((skill) => (
+                  <ExplorerSkillBadge key={skill.name} skill={skill} />
                 ))}
               </div>
             </GroupBox>
@@ -99,32 +131,8 @@ export default function SkillsExplorer({
             {/* Frameworks & Libraries Group */}
             <GroupBox label={`📦 ${t("skills.frameworks")}`}>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", padding: "4px 0" }}>
-                {[
-                  "Next.js 16+",
-                  "React 19",
-                  "Django 6.0+",
-                  "Django Ninja",
-                  "Celery",
-                  "PowerSync",
-                  "TanStack DB",
-                  "Tailwind CSS v4",
-                  "Fumadocs",
-                  "shadcn/ui",
-                  "@base-ui/react",
-                  "TanStack Query v5",
-                  "TanStack Form",
-                  "Zod v4",
-                  "next-intl",
-                  "Three.js / R3F",
-                  "GSAP",
-                ].map((skill) => (
-                  <Frame
-                    key={skill}
-                    variant="well"
-                    style={{ padding: "3px 8px", fontSize: "11px", background: "#f0f0f0" }}
-                  >
-                    {skill}
-                  </Frame>
+                {FRAMEWORKS_SKILLS.map((skill) => (
+                  <ExplorerSkillBadge key={skill.name} skill={skill} />
                 ))}
               </div>
             </GroupBox>
@@ -132,30 +140,8 @@ export default function SkillsExplorer({
             {/* Tools & Databases Group */}
             <GroupBox label={`🛠 ${t("skills.tools")}`}>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", padding: "4px 0" }}>
-                {[
-                  "Bun",
-                  "uv",
-                  "PostgreSQL 18",
-                  "SQLite (wa-sqlite)",
-                  "Redis",
-                  "Docker & Docker Compose",
-                  "Storybook 10",
-                  "Playwright",
-                  "Vitest",
-                  "React Doctor",
-                  "Fallow",
-                  "Ruff",
-                  "ESLint / Prettier",
-                  "Husky",
-                  "Steiger (FSD)",
-                ].map((skill) => (
-                  <Frame
-                    key={skill}
-                    variant="well"
-                    style={{ padding: "3px 8px", fontSize: "11px", background: "#f0f0f0" }}
-                  >
-                    {skill}
-                  </Frame>
+                {TOOLS_AND_DBS_SKILLS.map((skill) => (
+                  <ExplorerSkillBadge key={skill.name} skill={skill} />
                 ))}
               </div>
             </GroupBox>

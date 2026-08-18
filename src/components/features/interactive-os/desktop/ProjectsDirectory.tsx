@@ -228,6 +228,18 @@ export default function ProjectsDirectory({
             <ProjectCard
               title={t("projects.interviewFlowSaas.title")}
               description={t("projects.interviewFlowSaas.desc")}
+              technologies={[
+                "Next.js",
+                "React",
+                "FSD",
+                "PowerSync",
+                "TanStack DB",
+                "Django Ninja",
+                "Celery",
+                "Redis",
+                "wa-sqlite",
+                "AWS SES",
+              ]}
               isPrivate
             />
 
@@ -257,7 +269,7 @@ export default function ProjectsDirectory({
             <ProjectCard
               title={t("projects.awwwards.title")}
               description={t("projects.awwwards.desc")}
-              technologies={["React 19", "TypeScript", "Tailwind CSS v4", "GSAP"]}
+              technologies={["React", "TypeScript", "Tailwind CSS", "GSAP"]}
               websiteUrl="https://ahmedhanye.github.io/awwwards/"
               githubUrl="https://github.com/AhmedHanye/awwwards"
             />

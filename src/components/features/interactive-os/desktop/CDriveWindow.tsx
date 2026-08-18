@@ -3,15 +3,16 @@
 import React from "react";
 import { WindowContent, Frame } from "react95";
 import { useTranslations } from "next-intl";
-import { Folder, CdMusic } from "@react95/icons";
+import { Folder, CdMusic, Printer } from "@react95/icons";
 import WindowFrame from "./WindowFrame";
 
 interface FolderItemProps {
   label: string;
   onClick: () => void;
+  icon?: React.ReactNode;
 }
 
-function FolderItem({ label, onClick }: FolderItemProps) {
+function FolderItem({ label, onClick, icon }: FolderItemProps) {
   return (
     <button
       type="button"
@@ -29,7 +30,7 @@ function FolderItem({ label, onClick }: FolderItemProps) {
       }}
       onClick={onClick}
     >
-      <Folder variant="32x32_4" style={{ width: "32px", height: "32px" }} />
+      {icon ?? <Folder variant="32x32_4" style={{ width: "32px", height: "32px" }} />}
       <span style={{ fontSize: "11px", marginTop: "4px", textAlign: "center", wordBreak: "break-word" }}>
         {label}
       </span>
@@ -45,6 +46,8 @@ interface CDriveWindowProps {
   onFocus: () => void;
   zIndex: number;
   onOpenProjects: () => void;
+  onOpenCertificates: () => void;
+  onOpenResume?: () => void;
 }
 
 export default function CDriveWindow({
@@ -55,6 +58,8 @@ export default function CDriveWindow({
   onFocus,
   zIndex,
   onOpenProjects,
+  onOpenCertificates,
+  onOpenResume,
 }: CDriveWindowProps) {
   const t = useTranslations("OS");
 
@@ -64,6 +69,19 @@ export default function CDriveWindow({
     {
       label: t("cDrive.projects"),
       onClick: onOpenProjects,
+    },
+    {
+      label: t("cDrive.certificates"),
+      onClick: onOpenCertificates,
+    },
+    {
+      label: t("cDrive.resume"),
+      icon: <Printer variant="32x32_4" style={{ width: "32px", height: "32px" }} />,
+      onClick: () => {
+        if (onOpenResume) {
+          onOpenResume();
+        }
+      },
     },
     {
       label: t("cDrive.windows"),

@@ -10,13 +10,17 @@ import {
   GroupBox,
   Separator,
 } from "react95";
-import { Wordpad } from "@react95/icons";
+import { Wordpad, Printer } from "@react95/icons";
 import { useTranslations } from "next-intl";
 import { playFx } from "@/lib/sound";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 
-export default function AboutSection() {
+interface AboutSectionProps {
+  onOpenResume?: () => void;
+}
+
+export default function AboutSection({ onOpenResume }: AboutSectionProps) {
   const t = useTranslations("HomePage.about");
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -156,6 +160,19 @@ export default function AboutSection() {
 
               {/* Bottom Quick Links */}
               <div className="flex flex-wrap items-center justify-end gap-3 pt-2">
+                {onOpenResume && (
+                  <Button
+                    primary
+                    onClick={() => {
+                      playFx("click");
+                      onOpenResume();
+                    }}
+                    style={{ fontWeight: "bold", fontSize: "12px", display: "inline-flex", alignItems: "center", gap: "6px" }}
+                  >
+                    <Printer variant="16x16_4" style={{ width: "16px", height: "16px" }} />
+                    <span>{t("btnViewResume")}</span>
+                  </Button>
+                )}
                 <Button
                   onClick={() => handleOpenLink("https://github.com/AhmedHanye")}
                   style={{ fontWeight: "bold", fontSize: "12px" }}
@@ -169,7 +186,6 @@ export default function AboutSection() {
                   LinkedIn Profile
                 </Button>
                 <Button
-                  primary
                   onClick={handleEmailClick}
                   style={{ fontWeight: "bold", fontSize: "12px" }}
                 >

@@ -15,8 +15,8 @@ export function generateStaticParams() {
 function getOgContentStrings(isArabic: boolean) {
   return {
     windowTitle: isArabic
-      ? "Ahmed_OS [Arabic Edition // Interactive 3D Workspace]"
-      : "Ahmed_OS [Interactive 3D Workspace]",
+      ? "Ahmed Hanye [Arabic Edition // Interactive 3D Workspace]"
+      : "Ahmed Hanye [Interactive 3D Workspace]",
     categoryBadge: isArabic
       ? "RETRO OS EDITION // FULL-STACK SOFTWARE ENGINEER"
       : "SYSTEM PROFILE // FULL-STACK SOFTWARE ENGINEER",
@@ -36,7 +36,7 @@ export default async function Image({
   const name = "Ahmed Hanye";
   const role = "Full-Stack Software Engineer";
   const tagline =
-    "Resilient local-first web architectures, distributed systems & high-performance applications.";
+    "Resilient local-first architectures, sub-millisecond reactivity & scalable API systems across TypeScript and Python.";
 
   return new ImageResponse(
     (

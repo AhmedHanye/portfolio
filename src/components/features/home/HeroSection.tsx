@@ -75,7 +75,7 @@ export default function HeroSection() {
             }}
           >
             <Computer variant="16x16_4" style={{ width: "16px", height: "16px" }} />
-            <span>Ahmed_OS - Welcome.exe</span>
+            <span>Welcome.exe</span>
           </span>
         </WindowHeader>
 

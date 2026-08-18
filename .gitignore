@@ -43,3 +43,10 @@ next-env.d.ts
 .fallow/
 .doctor/
 
+# resume generated artifacts
+/resume/dist/
+/resume/*.pdf
+/resume/*.png
+/resume/*.html
+/resume/*.typ
+

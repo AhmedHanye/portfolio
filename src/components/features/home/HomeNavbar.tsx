@@ -1,76 +1,126 @@
 "use client";
 
-import React from "react";
-import { AppBar, Toolbar, Button, Frame } from "react95";
-import { Computer, MediaAudio, Mute } from "@react95/icons";
+import React, { useEffect, useState } from "react";
+import { AppBar, Toolbar, Button, Frame, Separator } from "react95";
+import {
+  Computer,
+  Folder,
+  FileText,
+  Globe,
+  MediaAudio,
+  Mute,
+  Printer,
+  Progman11,
+  Wordpad,
+} from "@react95/icons";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter, Link } from "@/i18n/routing";
 import { playFx, useSoundState } from "@/lib/sound";
 
 function NavBrand({ brandText }: { brandText: string }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-      <Computer variant="16x16_4" style={{ width: "18px", height: "18px" }} />
-      <button
-        type="button"
-        onClick={() => {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-          playFx("click");
-        }}
-        className="cursor-pointer bg-transparent border-0 p-0"
-        style={{
-          textDecoration: "none",
-          color: "#000",
-          fontWeight: "bold",
-          fontSize: "13px",
-          fontFamily: "ms_sans_serif, sans-serif",
-          letterSpacing: "0.5px",
-          display: "flex",
-          alignItems: "center",
-          gap: "4px",
-        }}
-      >
-        <span>{brandText}</span>
-      </button>
-    </div>
+    <Button
+      size="sm"
+      onClick={() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        playFx("click");
+      }}
+      style={{
+        fontWeight: "bold",
+        fontSize: "12px",
+        fontFamily: "ms_sans_serif, sans-serif",
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "6px",
+        height: "26px",
+        padding: "0 8px",
+      }}
+      title="Scroll to top"
+      aria-label="Scroll to top"
+    >
+      <Computer variant="16x16_4" style={{ width: "16px", height: "16px" }} />
+      <span>{brandText}</span>
+    </Button>
   );
+}
+
+interface NavLinksProps {
+  aboutLabel: string;
+  projectsLabel: string;
+  skillsLabel: string;
+  certificationsLabel: string;
+  contactLabel: string;
+  activeSection: string | null;
+  onScrollTo: (id: string) => (e: React.MouseEvent) => void;
 }
 
 function NavLinks({
   aboutLabel,
   projectsLabel,
   skillsLabel,
+  certificationsLabel,
   contactLabel,
+  activeSection,
   onScrollTo,
-}: {
-  aboutLabel: string;
-  projectsLabel: string;
-  skillsLabel: string;
-  contactLabel: string;
-  onScrollTo: (id: string) => (e: React.MouseEvent) => void;
-}) {
+}: NavLinksProps) {
+  const links = [
+    {
+      id: "about",
+      label: aboutLabel,
+      icon: <Wordpad variant="16x16_4" style={{ width: "14px", height: "14px" }} />,
+    },
+    {
+      id: "projects",
+      label: projectsLabel,
+      icon: <Folder variant="16x16_4" style={{ width: "14px", height: "14px" }} />,
+    },
+    {
+      id: "skills",
+      label: skillsLabel,
+      icon: <Progman11 variant="32x32_4" style={{ width: "14px", height: "14px" }} />,
+    },
+    {
+      id: "certifications",
+      label: certificationsLabel,
+      icon: <FileText variant="16x16_4" style={{ width: "14px", height: "14px" }} />,
+    },
+    {
+      id: "contact",
+      label: contactLabel,
+      icon: <Globe variant="16x16_4" style={{ width: "14px", height: "14px" }} />,
+    },
+  ];
+
   return (
     <nav
       style={{
         display: "flex",
         alignItems: "center",
-        gap: "4px",
+        gap: "3px",
         flexWrap: "wrap",
       }}
       aria-label="Main Navigation"
     >
-      <Button variant="menu" size="sm" onClick={onScrollTo("about")} style={{ fontSize: "11px" }}>
-        {aboutLabel}
-      </Button>
-      <Button variant="menu" size="sm" onClick={onScrollTo("projects")} style={{ fontSize: "11px" }}>
-        {projectsLabel}
-      </Button>
-      <Button variant="menu" size="sm" onClick={onScrollTo("skills")} style={{ fontSize: "11px" }}>
-        {skillsLabel}
-      </Button>
-      <Button variant="menu" size="sm" onClick={onScrollTo("contact")} style={{ fontSize: "11px" }}>
-        {contactLabel}
-      </Button>
+      {links.map((link) => (
+        <Button
+          key={link.id}
+          variant="menu"
+          size="sm"
+          active={activeSection === link.id}
+          onClick={onScrollTo(link.id)}
+          style={{
+            fontSize: "12px",
+            padding: "0 7px",
+            height: "26px",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "5px",
+          }}
+        >
+          {link.icon}
+          <span>{link.label}</span>
+        </Button>
+      ))}
     </nav>
   );
 }
@@ -149,23 +199,52 @@ function NavSoundButton({
 
 function NavControls({
   launch3dLabel,
+  resumeLabel,
   locale,
   muted,
+  time,
   soundMuteLabel,
   soundUnmuteLabel,
   onLanguageToggle,
   onSoundToggle,
+  onOpenResume,
 }: {
   launch3dLabel: string;
+  resumeLabel: string;
   locale: string;
   muted: boolean;
+  time: string;
   soundMuteLabel: string;
   soundUnmuteLabel: string;
   onLanguageToggle: () => void;
   onSoundToggle: () => void;
+  onOpenResume?: () => void;
 }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+      {onOpenResume && (
+        <Button
+          size="sm"
+          onClick={() => {
+            playFx("click");
+            onOpenResume();
+          }}
+          style={{
+            fontWeight: "bold",
+            fontSize: "11px",
+            color: "#000080",
+            display: "flex",
+            alignItems: "center",
+            gap: "4px",
+            height: "26px",
+            backgroundColor: "#f0f0f0",
+          }}
+        >
+          <Printer variant="16x16_4" style={{ width: "14px", height: "14px" }} />
+          <span>{resumeLabel}</span>
+        </Button>
+      )}
+
       <Link href="/interactive-os" prefetch={false} style={{ textDecoration: "none" }}>
         <Button
           size="sm"
@@ -176,6 +255,7 @@ function NavControls({
             display: "flex",
             alignItems: "center",
             gap: "4px",
+            height: "26px",
             backgroundColor: "#ffffdf",
           }}
         >
@@ -202,16 +282,78 @@ function NavControls({
           soundUnmuteLabel={soundUnmuteLabel}
           onSoundToggle={onSoundToggle}
         />
+        {time && (
+          <span
+            style={{
+              fontSize: "11px",
+              fontFamily: "ms_sans_serif, sans-serif",
+              lineHeight: 1,
+              color: "#000",
+              paddingLeft: "2px",
+              paddingRight: "2px",
+              userSelect: "none",
+            }}
+          >
+            {time}
+          </span>
+        )}
       </Frame>
     </div>
   );
 }
 
-export default function HomeNavbar() {
+const SECTION_IDS = ["about", "projects", "skills", "certifications", "contact"] as const;
+
+function isElementActive(id: string, scrollPos: number): boolean {
+  const el = document.getElementById(id);
+  if (!el) return false;
+  const top = el.offsetTop;
+  return scrollPos >= top && scrollPos < top + el.offsetHeight;
+}
+
+function getActiveSection(scrollPos: number): string | null {
+  return SECTION_IDS.find((id) => isElementActive(id, scrollPos)) ?? null;
+}
+
+interface HomeNavbarProps {
+  onOpenResume?: () => void;
+}
+
+export default function HomeNavbar({ onOpenResume }: HomeNavbarProps) {
   const t = useTranslations("HomePage.nav");
+  const tHero = useTranslations("HomePage.hero");
   const locale = useLocale();
   const router = useRouter();
   const { muted, toggle: toggleSound } = useSoundState();
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [time, setTime] = useState("");
+
+  useEffect(() => {
+    const updateClock = () => {
+      setTime(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+    };
+    updateClock();
+    const interval = setInterval(updateClock, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    let rafId: number | null = null;
+    const handleScroll = () => {
+      if (rafId !== null) return;
+      rafId = window.requestAnimationFrame(() => {
+        setActiveSection(getActiveSection(window.scrollY + 100));
+        rafId = null;
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (rafId !== null) window.cancelAnimationFrame(rafId);
+    };
+  }, []);
 
   const handleSoundToggle = () => {
     toggleSound();
@@ -231,9 +373,16 @@ export default function HomeNavbar() {
   const handleScrollTo = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     playFx("click");
+    setActiveSection(id);
     const el = document.getElementById(id);
     if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      const navOffset = 46;
+      const elementPosition = el.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.scrollY - navOffset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
     }
   };
 
@@ -256,25 +405,40 @@ export default function HomeNavbar() {
             display: "flex",
             alignItems: "center",
             flexWrap: "wrap",
-            gap: "6px",
+            gap: "8px",
           }}
         >
-          <NavBrand brandText={t("brand")} />
-          <NavLinks
-            aboutLabel={t("about")}
-            projectsLabel={t("projects")}
-            skillsLabel={t("skills")}
-            contactLabel={t("contact")}
-            onScrollTo={handleScrollTo}
-          />
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              flexWrap: "wrap",
+            }}
+          >
+            <NavBrand brandText={t("brand")} />
+            <Separator orientation="vertical" size="20px" />
+            <NavLinks
+              aboutLabel={t("about")}
+              projectsLabel={t("projects")}
+              skillsLabel={t("skills")}
+              certificationsLabel={t("certifications")}
+              contactLabel={t("contact")}
+              activeSection={activeSection}
+              onScrollTo={handleScrollTo}
+            />
+          </div>
           <NavControls
             launch3dLabel={t("launch3d")}
+            resumeLabel={tHero("btnResume")}
             locale={locale}
             muted={muted}
+            time={time}
             soundMuteLabel={t("soundMute")}
             soundUnmuteLabel={t("soundUnmute")}
             onLanguageToggle={handleLanguageToggle}
             onSoundToggle={handleSoundToggle}
+            onOpenResume={onOpenResume}
           />
         </Toolbar>
       </AppBar>

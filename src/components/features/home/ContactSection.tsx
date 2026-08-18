@@ -16,10 +16,154 @@ import { playFx } from "@/lib/sound";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 
+interface ContactFieldProps {
+  label: string;
+  displayValue: React.ReactNode;
+  copyValue: string;
+  copyLabel: string;
+  copiedToast: string;
+  actionLabel: string;
+  actionIcon: string;
+  onAction: () => void;
+}
+
+function ContactField({
+  label,
+  displayValue,
+  copyValue,
+  copyLabel,
+  copiedToast,
+  actionLabel,
+  actionIcon,
+  onAction,
+}: ContactFieldProps) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    playFx("open");
+    navigator.clipboard.writeText(copyValue);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3500);
+  };
+
+  return (
+    <GroupBox label={label} style={{ backgroundColor: "#fafafa" }}>
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-2">
+        <Frame
+          variant="field"
+          className="w-full sm:flex-1 p-2 bg-white text-xs sm:text-sm font-mono font-bold text-[#000080]"
+        >
+          {displayValue}
+        </Frame>
+
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <Button
+            onClick={handleCopy}
+            style={{ fontWeight: "bold", fontSize: "12px", minWidth: "100px" }}
+          >
+            {copied ? "✓ Copied!" : copyLabel}
+          </Button>
+
+          <Button
+            primary
+            onClick={onAction}
+            style={{ fontWeight: "bold", fontSize: "12px" }}
+          >
+            {actionIcon} {actionLabel}
+          </Button>
+        </div>
+      </div>
+
+      {copied && (
+        <div className="px-2 pb-1 text-xs text-emerald-700 font-bold animate-fade-in">
+          {copiedToast}
+        </div>
+      )}
+    </GroupBox>
+  );
+}
+
+function OnlineProfiles({
+  label,
+  githubLabel,
+  linkedinLabel,
+  onOpenLink,
+}: {
+  label: string;
+  githubLabel: string;
+  linkedinLabel: string;
+  onOpenLink: (url: string) => void;
+}) {
+  return (
+    <GroupBox label={`🌐 ${label}`}>
+      <div className="flex flex-col gap-2 p-1">
+        <Button
+          onClick={() => onOpenLink("https://github.com/AhmedHanye")}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            justifyContent: "flex-start",
+            fontSize: "12px",
+            padding: "6px 12px",
+          }}
+        >
+          <Computer variant="16x16_4" style={{ width: "16px", height: "16px" }} />
+          <span className="font-bold">{githubLabel}</span>
+        </Button>
+
+        <Button
+          onClick={() => onOpenLink("https://www.linkedin.com/in/ahmed-hanye/")}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            justifyContent: "flex-start",
+            fontSize: "12px",
+            padding: "6px 12px",
+          }}
+        >
+          <Wordpad variant="16x16_4" style={{ width: "16px", height: "16px" }} />
+          <span className="font-bold">{linkedinLabel}</span>
+        </Button>
+      </div>
+    </GroupBox>
+  );
+}
+
+function ResponseSlaBox({
+  label,
+  activelyInterviewing,
+  responseNote,
+  location,
+}: {
+  label: string;
+  activelyInterviewing: string;
+  responseNote: string;
+  location: string;
+}) {
+  return (
+    <GroupBox label={`⚡ ${label}`}>
+      <div className="space-y-2 p-1 text-xs sm:text-sm text-neutral-800">
+        <div className="flex items-center gap-2">
+          <span className="inline-block size-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="font-bold text-neutral-900">{activelyInterviewing}</span>
+        </div>
+        <p className="text-xs text-neutral-700 m-0 leading-relaxed">
+          {responseNote}
+        </p>
+        <Separator style={{ margin: "6px 0" }} />
+        <p className="text-[11px] text-neutral-700 m-0">
+          {location}
+        </p>
+      </div>
+    </GroupBox>
+  );
+}
+
 export default function ContactSection() {
   const t = useTranslations("HomePage.contact");
   const containerRef = useRef<HTMLDivElement>(null);
-  const [copied, setCopied] = useState(false);
 
   useGSAP(
     () => {
@@ -37,16 +181,14 @@ export default function ContactSection() {
     { scope: containerRef }
   );
 
-  const handleCopyEmail = () => {
-    playFx("open");
-    navigator.clipboard.writeText("ahmedhanyehossny@gmail.com");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 3500);
-  };
-
   const handleSendEmail = () => {
     playFx("click");
     window.location.href = "mailto:ahmedhanyehossny@gmail.com";
+  };
+
+  const handleCallPhone = () => {
+    playFx("click");
+    window.location.href = "tel:+201012362894";
   };
 
   const handleOpenLink = (url: string) => {
@@ -86,7 +228,6 @@ export default function ContactSection() {
 
         <WindowContent style={{ padding: "16px" }}>
           <div className="flex flex-col gap-5">
-            {/* Header badge & title */}
             <div>
               <span className="text-xs font-bold text-[#000080] bg-blue-100 px-2 py-0.5 border border-blue-300">
                 {t("badge")}
@@ -99,92 +240,42 @@ export default function ContactSection() {
               </p>
             </div>
 
-            {/* Email Box */}
-            <GroupBox label={`📧 ${t("emailLabel")}`} style={{ backgroundColor: "#fafafa" }}>
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-2">
-                <Frame
-                  variant="field"
-                  className="w-full sm:flex-1 p-2 bg-white text-xs sm:text-sm font-mono font-bold text-[#000080]"
-                >
-                  ahmedhanyehossny@gmail.com
-                </Frame>
+            <ContactField
+              label={`📧 ${t("emailLabel")}`}
+              displayValue="ahmedhanyehossny@gmail.com"
+              copyValue="ahmedhanyehossny@gmail.com"
+              copyLabel={t("copyEmail")}
+              copiedToast={t("copiedToast")}
+              actionLabel={t("sendEmail")}
+              actionIcon="✉"
+              onAction={handleSendEmail}
+            />
 
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <Button
-                    onClick={handleCopyEmail}
-                    style={{ fontWeight: "bold", fontSize: "12px", minWidth: "100px" }}
-                  >
-                    {copied ? "✓ Copied!" : t("copyEmail")}
-                  </Button>
+            <ContactField
+              label={`📱 ${t("phoneLabel")}`}
+              displayValue={<bdi dir="ltr">+20 101 236 2894</bdi>}
+              copyValue="+201012362894"
+              copyLabel={t("copyPhone")}
+              copiedToast={t("copiedPhoneToast")}
+              actionLabel={t("callPhone")}
+              actionIcon="📞"
+              onAction={handleCallPhone}
+            />
 
-                  <Button
-                    primary
-                    onClick={handleSendEmail}
-                    style={{ fontWeight: "bold", fontSize: "12px" }}
-                  >
-                    ✉ {t("sendEmail")}
-                  </Button>
-                </div>
-              </div>
-
-              {copied && (
-                <div className="px-2 pb-1 text-xs text-emerald-700 font-bold animate-fade-in">
-                  {t("copiedToast")}
-                </div>
-              )}
-            </GroupBox>
-
-            {/* Social Links and Career Info */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <GroupBox label={`🌐 ${t("onlineProfiles")}`}>
-                <div className="flex flex-col gap-2 p-1">
-                  <Button
-                    onClick={() => handleOpenLink("https://github.com/AhmedHanye")}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      justifyContent: "flex-start",
-                      fontSize: "12px",
-                      padding: "6px 12px",
-                    }}
-                  >
-                    <Computer variant="16x16_4" style={{ width: "16px", height: "16px" }} />
-                    <span className="font-bold">{t("github")}</span>
-                  </Button>
+              <OnlineProfiles
+                label={t("onlineProfiles")}
+                githubLabel={t("github")}
+                linkedinLabel={t("linkedin")}
+                onOpenLink={handleOpenLink}
+              />
 
-                  <Button
-                    onClick={() => handleOpenLink("https://www.linkedin.com/in/ahmed-hanye/")}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      justifyContent: "flex-start",
-                      fontSize: "12px",
-                      padding: "6px 12px",
-                    }}
-                  >
-                    <Wordpad variant="16x16_4" style={{ width: "16px", height: "16px" }} />
-                    <span className="font-bold">{t("linkedin")}</span>
-                  </Button>
-                </div>
-              </GroupBox>
-
-              <GroupBox label={`⚡ ${t("responseSla")}`}>
-                <div className="space-y-2 p-1 text-xs sm:text-sm text-neutral-800">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-block size-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="font-bold text-neutral-900">{t("activelyInterviewing")}</span>
-                  </div>
-                  <p className="text-xs text-neutral-700 m-0 leading-relaxed">
-                    {t("responseNote")}
-                  </p>
-                  <Separator style={{ margin: "6px 0" }} />
-                  <p className="text-[11px] text-neutral-700 m-0">
-                    {t("location")}
-                  </p>
-                </div>
-              </GroupBox>
+              <ResponseSlaBox
+                label={t("responseSla")}
+                activelyInterviewing={t("activelyInterviewing")}
+                responseNote={t("responseNote")}
+                location={t("location")}
+              />
             </div>
           </div>
         </WindowContent>

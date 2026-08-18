@@ -16,11 +16,14 @@ import { playFx } from "@/lib/sound";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 
+import { getSkillUrl } from "@/lib/constants/skills";
+
 interface ProjectCardData {
   key: "saas" | "proto" | "awwwards";
   titleKey: string;
   taglineKey: string;
   descKey: string;
+  technologies: string[];
   liveUrl?: string;
   githubUrl?: string;
   isPrivate?: boolean;
@@ -32,6 +35,18 @@ const PROJECTS_DATA: ProjectCardData[] = [
     titleKey: "items.saas.title",
     taglineKey: "items.saas.tagline",
     descKey: "items.saas.desc",
+    technologies: [
+      "Next.js",
+      "React",
+      "FSD",
+      "PowerSync",
+      "TanStack DB",
+      "Django Ninja",
+      "Celery",
+      "Redis",
+      "wa-sqlite",
+      "AWS SES",
+    ],
     isPrivate: true,
   },
   {
@@ -39,6 +54,17 @@ const PROJECTS_DATA: ProjectCardData[] = [
     titleKey: "items.proto.title",
     taglineKey: "items.proto.tagline",
     descKey: "items.proto.desc",
+    technologies: [
+      "React",
+      "TypeScript",
+      "Vite",
+      "Tailwind CSS",
+      "shadcn/ui",
+      "Supabase",
+      "PostgreSQL",
+      "Playwright",
+      "Vitest",
+    ],
     liveUrl: "https://interview-flow-prototype.vercel.app/",
     githubUrl: "https://github.com/AhmedHanye/InterviewFlow-prototype",
   },
@@ -47,6 +73,7 @@ const PROJECTS_DATA: ProjectCardData[] = [
     titleKey: "items.awwwards.title",
     taglineKey: "items.awwwards.tagline",
     descKey: "items.awwwards.desc",
+    technologies: ["React", "TypeScript", "Tailwind CSS", "GSAP"],
     liveUrl: "https://ahmedhanye.github.io/awwwards/",
     githubUrl: "https://github.com/AhmedHanye/awwwards",
   },
@@ -141,6 +168,50 @@ function HomeProjectCard({
         <p className="text-xs sm:text-base text-neutral-800 leading-relaxed m-0">
           {t(proj.descKey)}
         </p>
+
+        {proj.technologies && proj.technologies.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            {proj.technologies.map((tech) => {
+              const url = getSkillUrl(tech);
+              const badge = (
+                <Frame
+                  variant="well"
+                  style={{
+                    padding: "2px 6px",
+                    fontSize: "10px",
+                    fontWeight: "bold",
+                    backgroundColor: "#ececec",
+                    color: "#222",
+                    cursor: url ? "pointer" : "default",
+                    display: "inline-flex",
+                    alignItems: "center",
+                  }}
+                  className={url ? "hover:bg-neutral-200" : ""}
+                >
+                  <bdi dir="ltr">{tech}</bdi>
+                </Frame>
+              );
+
+              if (url) {
+                return (
+                  <a
+                    key={tech}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={`Visit official ${tech} website`}
+                    onClick={() => onOpenLink(url)}
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    {badge}
+                  </a>
+                );
+              }
+
+              return <React.Fragment key={tech}>{badge}</React.Fragment>;
+            })}
+          </div>
+        )}
 
         <Separator style={{ margin: "8px 0" }} />
 

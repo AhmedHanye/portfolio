@@ -104,8 +104,8 @@ function buildJsonLd(locale: string) {
       sameAs: [SITE_CONFIG.links.github, SITE_CONFIG.links.linkedin],
       email: SITE_CONFIG.email,
       knowsAbout: [
-        "React 19",
-        "Next.js 16",
+        "React",
+        "Next.js",
         "TypeScript",
         "Three.js",
         "GSAP",

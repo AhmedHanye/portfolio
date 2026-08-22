@@ -45,11 +45,6 @@ export default function AboutSection({ onOpenResume }: AboutSectionProps) {
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
-  const handleEmailClick = () => {
-    playFx("click");
-    window.location.href = "mailto:";
-  };
-
   return (
     <section
       ref={containerRef}
@@ -184,12 +179,6 @@ export default function AboutSection({ onOpenResume }: AboutSectionProps) {
                   style={{ fontWeight: "bold", fontSize: "12px" }}
                 >
                   LinkedIn Profile
-                </Button>
-                <Button
-                  onClick={handleEmailClick}
-                  style={{ fontWeight: "bold", fontSize: "12px" }}
-                >
-                  Email Ahmed
                 </Button>
               </div>
             </Frame>

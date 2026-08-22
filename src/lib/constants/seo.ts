@@ -3,9 +3,6 @@ export const SITE_CONFIG = {
   fullName: "Ahmed Hanye",
   jobTitle: "Full-Stack Software Engineer",
   twitterHandle: "@ahmedhanye",
-  email: "",
-  phone: "",
-  phoneRaw: "",
   links: {
     github: "https://github.com/AhmedHanye",
     linkedin: "https://linkedin.com/in/ahmedhanye",
@@ -30,7 +27,7 @@ export function getSiteUrl(): string {
     return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
   }
 
-  return "https://ahmedhanye.me";
+  return "https://www.ahmedhanye.tech";
 }
 
 export function getCanonicalUrl(locale: string, path = ""): string {

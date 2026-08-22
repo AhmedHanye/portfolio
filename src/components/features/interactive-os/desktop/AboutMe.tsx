@@ -35,10 +35,6 @@ export default function AboutMe({
     }
   };
 
-  const handleEmailClick = () => {
-    window.location.href = "mailto:";
-  };
-
   return (
     <WindowFrame
       isOpen={isOpen}
@@ -117,9 +113,6 @@ export default function AboutMe({
             <p style={{ margin: "2px 0" }}>
               <strong>{t("aboutMe.location")}</strong>
             </p>
-            <p style={{ margin: "2px 0" }}>
-              <strong>{t("aboutMe.phone")}</strong>
-            </p>
           </div>
 
           <div style={{ flexGrow: 1 }} />
@@ -154,7 +147,6 @@ export default function AboutMe({
             >
               {t("aboutMe.linkedin")}
             </Button>
-            <Button onClick={handleEmailClick}>{t("aboutMe.emailMe")}</Button>
           </div>
         </Frame>
       </WindowContent>

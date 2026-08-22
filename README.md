@@ -177,4 +177,3 @@ The portfolio provides first-class support for **English (`en`)** and **Arabic (
 
 - GitHub: [AhmedHanye](https://github.com/AhmedHanye)
 - LinkedIn: [ahmed-hanye](https://www.linkedin.com/in/ahmed-hanye/)
-- Email: 

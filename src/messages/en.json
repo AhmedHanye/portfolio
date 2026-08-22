@@ -337,10 +337,8 @@
       "education": "Education: Arab Open University (Cairo)",
       "major": "Major: Computer Science (Graduated: July 2026)",
       "location": "Location: Egypt (Open to Remote & Relocation)",
-      "phone": "Phone / WhatsApp: ",
       "github": "GitHub",
       "linkedin": "LinkedIn",
-      "emailMe": "Email Me",
       "resume": "Resume / CV"
     },
     "skills": {
@@ -416,7 +414,7 @@
     "explorer": {
       "title": "Windows Explorer",
       "projectsPath": "C:\\Projects:",
-      "readmeAlert": "README.TXT - Notepad\n\nAhmed Hanye - Full-Stack Software Engineer\nEgypt | \n-----------------------------------\n\nFull-Stack Software Engineer specializing in resilient local-first architectures, sub-millisecond reactivity, and scalable API systems across TypeScript and Python.\n\nDouble-click the desktop icons to explore my bio, skills, and projects!",
+      "readmeAlert": "README.TXT - Notepad\n\nAhmed Hanye - Full-Stack Software Engineer\nEgypt\n-----------------------------------\n\nFull-Stack Software Engineer specializing in resilient local-first architectures, sub-millisecond reactivity, and scalable API systems across TypeScript and Python.\n\nDouble-click the desktop icons to explore my bio, skills, and projects!",
       "splineAlert": "Shortcut: WebGL_Workspace_3D - Return to 3D room via shutdown or taskbar."
     },
     "rotatePrompt": {

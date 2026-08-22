@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import {
   Window,
   WindowHeader,
   WindowContent,
   Button,
-  Frame,
   GroupBox,
   Separator,
 } from "react95";
@@ -15,73 +14,6 @@ import { useTranslations } from "next-intl";
 import { playFx } from "@/lib/sound";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
-
-interface ContactFieldProps {
-  label: string;
-  displayValue: React.ReactNode;
-  copyValue: string;
-  copyLabel: string;
-  copiedToast: string;
-  actionLabel: string;
-  actionIcon: string;
-  onAction: () => void;
-}
-
-function ContactField({
-  label,
-  displayValue,
-  copyValue,
-  copyLabel,
-  copiedToast,
-  actionLabel,
-  actionIcon,
-  onAction,
-}: ContactFieldProps) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = () => {
-    playFx("open");
-    navigator.clipboard.writeText(copyValue);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 3500);
-  };
-
-  return (
-    <GroupBox label={label} style={{ backgroundColor: "#fafafa" }}>
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-2">
-        <Frame
-          variant="field"
-          className="w-full sm:flex-1 p-2 bg-white text-xs sm:text-sm font-mono font-bold text-[#000080]"
-        >
-          {displayValue}
-        </Frame>
-
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <Button
-            onClick={handleCopy}
-            style={{ fontWeight: "bold", fontSize: "12px", minWidth: "100px" }}
-          >
-            {copied ? "✓ Copied!" : copyLabel}
-          </Button>
-
-          <Button
-            primary
-            onClick={onAction}
-            style={{ fontWeight: "bold", fontSize: "12px" }}
-          >
-            {actionIcon} {actionLabel}
-          </Button>
-        </div>
-      </div>
-
-      {copied && (
-        <div className="px-2 pb-1 text-xs text-emerald-700 font-bold animate-fade-in">
-          {copiedToast}
-        </div>
-      )}
-    </GroupBox>
-  );
-}
 
 function OnlineProfiles({
   label,
@@ -181,16 +113,6 @@ export default function ContactSection() {
     { scope: containerRef }
   );
 
-  const handleSendEmail = () => {
-    playFx("click");
-    window.location.href = "mailto:";
-  };
-
-  const handleCallPhone = () => {
-    playFx("click");
-    window.location.href = "tel:";
-  };
-
   const handleOpenLink = (url: string) => {
     playFx("click");
     window.open(url, "_blank", "noopener,noreferrer");
@@ -239,28 +161,6 @@ export default function ContactSection() {
                 {t("subheading")}
               </p>
             </div>
-
-            <ContactField
-              label={`📧 ${t("emailLabel")}`}
-              displayValue=""
-              copyValue=""
-              copyLabel={t("copyEmail")}
-              copiedToast={t("copiedToast")}
-              actionLabel={t("sendEmail")}
-              actionIcon="✉"
-              onAction={handleSendEmail}
-            />
-
-            <ContactField
-              label={`📱 ${t("phoneLabel")}`}
-              displayValue={<bdi dir="ltr"></bdi>}
-              copyValue=""
-              copyLabel={t("copyPhone")}
-              copiedToast={t("copiedPhoneToast")}
-              actionLabel={t("callPhone")}
-              actionIcon="📞"
-              onAction={handleCallPhone}
-            />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <OnlineProfiles

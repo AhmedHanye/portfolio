@@ -102,7 +102,6 @@ function buildJsonLd(locale: string) {
       jobTitle: SITE_CONFIG.jobTitle,
       url: getCanonicalUrl(locale),
       sameAs: [SITE_CONFIG.links.github, SITE_CONFIG.links.linkedin],
-      email: SITE_CONFIG.email,
       knowsAbout: [
         "React",
         "Next.js",

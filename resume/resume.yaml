@@ -5,7 +5,7 @@ cv:
   location: Damietta, Egypt (Open to Remote & Relocation)
   email: ahmedhanyehossny@gmail.com
   phone: "+20 101 236 2894"
-  website: https://ahmedhanye.me
+  website: https://www.ahmedhanye.tech
   social_networks:
     - network: LinkedIn
       username: ahmedhanye
@@ -54,7 +54,7 @@ cv:
           - Engineered a synchronized multi-evaluator scoring interface with live evaluation rubrics using React, TypeScript, Vite, Tailwind CSS, and shadcn/ui.
           - Integrated Supabase and PostgreSQL with Row-Level Security (RLS) policies and optimistic client updates for concurrent interviewers.
           - Implemented full test suites using Playwright and Vitest to validate real-time synchronization mechanics and scoring state persistence.
-      - name: '[Retro OS & 3D Interactive Portfolio Platform](https://ahmedhanye.me)'
+      - name: '[Retro OS & 3D Interactive Portfolio Platform](https://www.ahmedhanye.tech)'
         start_date: 2026-01
         end_date: 2026-07
         summary: Dual-experience portfolio combining an interactive 3D CRT workstation and a simulated Windows 95 desktop OS.

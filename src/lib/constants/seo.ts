@@ -30,7 +30,7 @@ export function getSiteUrl(): string {
     return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
   }
 
-  return "https://ahmedhanye.me";
+  return "https://www.ahmedhanye.tech";
 }
 
 export function getCanonicalUrl(locale: string, path = ""): string {
